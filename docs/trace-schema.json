@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentscope.dev/trace-schema.json",
+  "title": "AgentScope Trace",
+  "description": "Schema for an AgentScope trace file. A trace file captures one or more agent runs, each composed of ordered timeline actions.",
+  "type": "object",
+  "required": ["schemaVersion", "runs"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Version of the AgentScope trace schema this file conforms to."
+    },
+    "runs": {
+      "type": "array",
+      "description": "One or more agent runs captured in this trace file.",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/AgentRun" }
+    }
+  },
+  "definitions": {
+    "AgentRun": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "agent",
+        "branch",
+        "status",
+        "trustScore",
+        "startedAt",
+        "duration",
+        "cost",
+        "filesChanged",
+        "commands",
+        "actions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this run (e.g. 'run-auth-421')."
+        },
+        "title": {
+          "type": "string",
+          "description": "Human-readable summary of what the agent was asked to do."
+        },
+        "agent": {
+          "type": "string",
+          "description": "Name or identifier of the AI agent that performed this run (e.g. 'Claude Code')."
+        },
+        "branch": {
+          "type": "string",
+          "description": "Git branch the agent worked on."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "warning"],
+          "description": "Overall outcome of the run. 'warning' means the agent completed the task but reviewers should inspect closely."
+        },
+        "trustScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Confidence score (0-100) for this run based on heuristics like test pass rate, edit scope, and error recovery."
+        },
+        "startedAt": {
+          "type": "string",
+          "description": "Human-readable start timestamp (e.g. 'Today, 18:41')."
+        },
+        "duration": {
+          "type": "string",
+          "description": "Wall-clock duration of the run (e.g. '12m 48s')."
+        },
+        "cost": {
+          "type": "string",
+          "description": "Estimated API cost for the run (e.g. '$0.38')."
+        },
+        "filesChanged": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of files the agent modified during this run."
+        },
+        "commands": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of shell commands the agent executed during this run."
+        },
+        "actions": {
+          "type": "array",
+          "description": "Ordered timeline of actions the agent performed.",
+          "items": { "$ref": "#/definitions/TraceAction" }
+        }
+      }
+    },
+    "TraceAction": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "title",
+        "timestamp",
+        "duration",
+        "risk",
+        "summary",
+        "details"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this action within the run (e.g. 'a1')."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "read_file",
+            "edit_file",
+            "run_command",
+            "test_failed",
+            "test_passed",
+            "generate_summary"
+          ],
+          "description": "Category of the action. Determines the icon and color used in the timeline."
+        },
+        "title": {
+          "type": "string",
+          "description": "Short label shown in the timeline for this action."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Time the action started (e.g. '18:41:12')."
+        },
+        "duration": {
+          "type": "string",
+          "description": "How long the action took (e.g. '24s', '1m 16s')."
+        },
+        "risk": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "Risk level of this action. 'high' means the action touched production code or ran a potentially destructive command."
+        },
+        "summary": {
+          "type": "string",
+          "description": "One-to-two sentence summary of what happened in this action."
+        },
+        "details": {
+          "type": "array",
+          "description": "Bullet-point evidence notes that support the summary.",
+          "items": { "type": "string" }
+        },
+        "file": {
+          "type": "string",
+          "description": "Path to the file this action read or edited. Present for read_file and edit_file actions."
+        },
+        "command": {
+          "type": "string",
+          "description": "Shell command that was executed. Present for run_command, test_failed, and test_passed actions."
+        },
+        "output": {
+          "type": "string",
+          "description": "Captured stdout or stderr from the action. May contain test output, command logs, or AI-generated summaries."
+        },
+        "diff": {
+          "type": "string",
+          "description": "Unified diff produced by this action. Present for edit_file actions."
+        }
+      }
+    }
+  }
+}
