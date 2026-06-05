@@ -11,7 +11,7 @@ Run through this list before tagging a GitHub release.
 - [x] `CONTRIBUTING.md` exists
 - [x] `docs/trace-schema.json` is up to date
 - [x] `examples/auth-fix.trace.json` is valid and matches the schema
-- [ ] `git init` completed and initial commit made
+- [x] `git init` completed and initial commit made
 - [ ] GitHub repo description set
 - [ ] GitHub topics set: `ai`, `coding-agent`, `trace-viewer`, `developer-tools`, `observability`, `react`, `typescript`
 - [ ] `private: true` removed from `package.json` (only if publishing the package to npm -- keep it for the repo)
