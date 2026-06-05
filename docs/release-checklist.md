@@ -23,5 +23,6 @@ Run through this list before tagging a GitHub release.
 - [ ] `npm run dev` smoke test passes
 - [ ] Import `examples/auth-fix.trace.json` works and renders correctly
 - [ ] CLI recorder smoke test passes, if CLI changed
+- [ ] GitHub Actions example workflow is up to date, if CI docs changed
 - [ ] Changelog updated (if maintaining one)
 - [ ] Tag pushed: `git tag vX.Y.Z && git push --tags`

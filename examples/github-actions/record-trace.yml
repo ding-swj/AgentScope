@@ -1,0 +1,33 @@
+name: AgentScope Record Trace
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Replace the command below with the command you want to record.
+      # Examples: npm test, npm run lint, npm run build, npm run ci
+      - run: npm run agentscope -- record -- npm run lint
+
+      - run: npm run agentscope -- validate .agentscope/*.trace.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agentscope-trace
+          path: .agentscope/*.trace.json
+          retention-days: 30

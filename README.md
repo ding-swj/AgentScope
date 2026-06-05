@@ -112,6 +112,9 @@ npm run agentscope -- record -- npm test
 
 # Record any shell command
 npm run agentscope -- record -- npm run build
+
+# Validate a trace file
+npm run agentscope -- validate .agentscope/example.trace.json
 ```
 
 The recorder captures:
@@ -125,6 +128,10 @@ The recorder captures:
 The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in the Web UI via the Import button in the header, or drag and drop the file anywhere on the page.
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
+
+## GitHub Actions
+
+AgentScope can run inside CI to record traces, validate them, and upload them as artifacts. See [`docs/github-actions.md`](docs/github-actions.md) for the setup guide and [`examples/github-actions/record-trace.yml`](examples/github-actions/record-trace.yml) for a copy-pasteable workflow.
 
 ## Roadmap
 
