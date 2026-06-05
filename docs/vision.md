@@ -83,7 +83,12 @@ AgentScope UI
 
 - [x] Trace format spec as JSON Schema ([docs/trace-schema.json](trace-schema.json))
 - [x] Example trace gallery ([examples/auth-fix.trace.json](../examples/auth-fix.trace.json))
-- [ ] File import for trace JSON
+- [x] File import for trace JSON
+- [x] CLI recorder MVP
+  - `npm run agentscope -- record -- <command>` wraps any shell command
+  - Captures exit code, stdout, stderr, duration, cwd, and git branch
+  - Outputs `.agentscope/YYYY-MM-DD-HHmmss.trace.json`
+  - Generated trace is importable into the Web UI
 - [ ] Claude Code recorder prototype
 
 ### Phase 3: Ecosystem

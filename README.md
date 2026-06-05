@@ -101,11 +101,35 @@ AgentScope uses a simple JSON format for traces. See the full schema at [`docs/t
 
 Action types: `read_file`, `edit_file`, `run_command`, `test_failed`, `test_passed`, `generate_summary`.
 
+## CLI Recorder
+
+AgentScope ships with a lightweight CLI recorder that wraps any command and produces a trace file.
+
+```bash
+# Record a test run
+npm run agentscope -- record -- npm test
+
+# Record any shell command
+npm run agentscope -- record -- npm run build
+```
+
+The recorder captures:
+
+- Shell command executed
+- Working directory and git branch
+- Command exit code
+- stdout and stderr output
+- Wall-clock duration
+
+The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in the Web UI via the Import button in the header.
+
+For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
+
 ## Roadmap
 
 - [x] Import external trace JSON files
 - [x] Publish the AgentScope trace schema
-- [ ] CLI recorder for shell commands, git diffs, and test runs
+- [x] CLI recorder for shell commands and test runs
 - [ ] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
