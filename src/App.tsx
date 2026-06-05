@@ -6,6 +6,7 @@ import {
   ChevronRight,
   Clock3,
   Code2,
+  Download,
   FileCode2,
   FileJson,
   GitBranch,
@@ -35,7 +36,9 @@ function App() {
   const [activeRunId, setActiveRunId] = useState(runs[0].id)
   const [importError, setImportError] = useState<string | null>(null)
   const [traceSource, setTraceSource] = useState('examples/auth-fix.trace.json')
+  const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dragCounter = useRef(0)
 
   const activeRun = runs.find((run) => run.id === activeRunId) ?? runs[0]
   const [activeActionId, setActiveActionId] = useState(activeRun.actions[0]?.id ?? '')
@@ -50,14 +53,8 @@ function App() {
     setActiveActionId(nextRun?.actions[0]?.id ?? '')
   }
 
-  const handleImportClick = useCallback(() => {
-    fileInputRef.current?.click()
-  }, [])
-
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  // Shared file reader -- used by both the Import button and drag-and-drop.
+  const importFile = useCallback((file: File) => {
     setImportError(null)
 
     const reader = new FileReader()
@@ -85,16 +82,88 @@ function App() {
     }
 
     reader.readAsText(file)
+  }, [])
 
+  const handleImportClick = useCallback(() => {
+    fileInputRef.current?.click()
+  }, [])
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    importFile(file)
     // Reset input so the same file can be re-imported
     e.target.value = ''
+  }, [importFile])
+
+  // Drag-and-drop handlers
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current += 1
+    if (e.dataTransfer.items?.length) {
+      setIsDragOver(true)
+    }
   }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = 'copy'
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current -= 1
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0
+      setIsDragOver(false)
+    }
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    dragCounter.current = 0
+    setIsDragOver(false)
+
+    const file = e.dataTransfer.files?.[0]
+    if (!file) return
+
+    // Accept .json files only
+    if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
+      setImportError('Please drop a .json trace file.')
+      return
+    }
+
+    importFile(file)
+  }, [importFile])
 
   const selectedMeta = activeAction ? actionMeta[activeAction.type] : undefined
   const SelectedIcon = selectedMeta?.icon ?? Bot
 
   return (
-    <main className="min-h-screen bg-[#07090d] text-slate-200">
+    <main
+      className="min-h-screen bg-[#07090d] text-slate-200"
+      onDragEnter={handleDragEnter}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      {/* Drop overlay */}
+      {isDragOver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-cyan-500/10 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed border-cyan-300/50 bg-[#0b0f16]/95 px-10 py-12 text-center">
+            <Download className="h-10 w-10 text-cyan-300" />
+            <div>
+              <p className="text-lg font-semibold text-cyan-100">Drop trace file to import</p>
+              <p className="mt-1 text-sm text-slate-400">Accepts .json AgentScope trace files</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="border-b border-white/10 bg-[#0b0f16]/95 px-5 py-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">

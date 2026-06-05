@@ -34,6 +34,7 @@ Think of it as developer observability for AI coding agents.
 - Action detail panel with summaries, timestamps, risk levels, and evidence notes
 - Output panel for command logs, test results, and code diffs
 - Dark-first developer tool UI
+- Drag-and-drop trace file import
 - Realistic mock trace data out of the box
 
 ## Quick Start
@@ -121,7 +122,7 @@ The recorder captures:
 - stdout and stderr output
 - Wall-clock duration
 
-The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in the Web UI via the Import button in the header.
+The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in the Web UI via the Import button in the header, or drag and drop the file anywhere on the page.
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
