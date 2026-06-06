@@ -10,6 +10,7 @@ All notable changes to AgentScope are documented in this file.
 - **CLI error-path coverage.** Tests now lock in user-facing errors for invalid JSONL, empty/unsupported session imports, and PR summary posting without GitHub credentials.
 - **Recorded trace validation check.** `record` now validates generated traces before writing them and has smoke test coverage for a successful recorded command.
 - **Validate command error tests.** `npm test` now covers missing trace files, wrong schema versions, and empty `runs` arrays.
+- **Record failing-command test.** `record` failing-command behavior is covered by CLI tests, locking in trace output on failure, exit code passthrough, and evidence notes.
 
 ## [0.6.0] - 2026-06-06
 

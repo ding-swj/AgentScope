@@ -157,6 +157,38 @@ test('record captures a simple command', () => {
   })
 })
 
+test('record captures a failing command', () => {
+  withTempDir((dir) => {
+    const result = spawnSync(process.execPath, [
+      cli,
+      'record', '--',
+      process.execPath, '-e',
+      "console.error('boom');process.exit(7)",
+    ], {
+      cwd: dir,
+      encoding: 'utf8',
+      env: process.env,
+    })
+
+    assert.equal(result.status, 7, `expected exit code 7, got ${result.status}`)
+
+    // The trace is still written even when the recorded command fails
+    const trace = parseWrittenTrace(result.stdout)
+
+    assert.equal(trace.schemaVersion, '1.0.0')
+    assert.equal(trace.runs.length, 1)
+    assert.equal(trace.runs[0].status, 'failed')
+    assert.equal(trace.runs[0].actions[0].type, 'test_failed')
+    assert.match(trace.runs[0].actions[0].output, /boom/)
+
+    const details = trace.runs[0].actions[0].details
+    assert.ok(
+      details.some((d) => d.includes('Exit code: 7')),
+      `expected details to contain "Exit code: 7", got: ${JSON.stringify(details)}`,
+    )
+  })
+})
+
 test('import-jsonl reports invalid JSON with a line number', () => {
   withTempDir((dir) => {
     const fixture = join(dir, 'bad.jsonl')
