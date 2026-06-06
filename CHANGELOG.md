@@ -2,6 +2,13 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **Session JSON adapter.** `npm run agentscope -- import-session <input.json>` imports common Claude/Codex-style JSON session exports and normalizes tool calls into AgentScope traces.
+- **Session adapter guide and example.** `docs/session-json.md` documents accepted shapes, field mapping, action mapping, generated metadata, and limitations. `examples/agent-session.json` provides an anonymized sample session.
+
 ## [0.5.0] - 2026-06-06
 
 ### Added

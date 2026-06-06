@@ -17,13 +17,14 @@ Adapters bridge that gap. They read the agent's native log format and normalize 
 
 ## Target adapters
 
-The following agents are on the roadmap. The Generic JSONL adapter is available now; the rest are planned.
+The following agents are on the roadmap. Generic JSONL and Session JSON are available now; native agent-specific parsers are still planned.
 
 | Adapter | Input source | Status |
 | ------- | ------------ | ------ |
 | **Generic JSONL** | Line-delimited JSON with tool calls | [MVP available](generic-jsonl.md) |
-| **Claude Code** | Session export or hooks output | Planned |
-| **Codex** | Session log or export | Planned |
+| **Session JSON** | JSON array/object with common tool-call fields | [MVP available](session-json.md) |
+| **Claude Code native** | Session export or hooks output | Planned |
+| **Codex native** | Session log or export | Planned |
 | **Cursor** | Export or local log | Planned |
 | **Aider** | Chat log / edit history | Planned |
 
@@ -169,11 +170,22 @@ function readStringArray(value: unknown): string[] {
 
 The `normalize` function is the core of each adapter: it maps one raw tool-call entry to one `TraceAction`. The action type mapping depends on the source agent's naming conventions.
 
+## Session JSON adapter (MVP available)
+
+The Session JSON adapter imports common Claude/Codex-style session exports without requiring an exact upstream schema. It accepts either a JSON array or a JSON object with `events`, `messages`, `actions`, `entries`, `toolCalls`, `tool_calls`, or `steps`.
+
+```bash
+npm run agentscope -- import-session examples/agent-session.json
+```
+
+The adapter recognizes common tool-call fields such as `tool`, `tool_name`, `input.file_path`, `input.command`, `output`, `result`, and `patch`, then maps them to AgentScope action types. See [`docs/session-json.md`](session-json.md) for the full field mapping and limitations.
+
 ## Prioritization
 
 1. **Generic JSONL adapter** (available). A line-delimited JSON format that any agent framework or log exporter can emit. This gives immediate coverage for all agents without writing agent-specific parsers.
-2. **Claude Code / Codex session export** (next priority). These two agents have large user bases and may produce structured output that maps well to the trace schema.
-3. **Cursor / Aider** (later priority). Cursor logs and Aider chat/edit history may require more normalization work.
+2. **Session JSON adapter** (available). A permissive importer for JSON session exports with common Claude/Codex-style tool-call fields.
+3. **Claude Code / Codex native adapters** (next priority). Native parsers can preserve richer metadata once stable export samples are available.
+4. **Cursor / Aider** (later priority). Cursor logs and Aider chat/edit history may require more normalization work.
 
 ## Limitations
 

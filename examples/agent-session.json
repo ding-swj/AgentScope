@@ -1,0 +1,76 @@
+{
+  "title": "Fix auth token expiry test",
+  "agent": "Claude Code",
+  "branch": "fix/auth-token-expiry",
+  "startedAt": "2026-06-06T09:40:00.000Z",
+  "duration": "9m 18s",
+  "cost": "$0.21",
+  "events": [
+    {
+      "tool": "Read",
+      "input": {
+        "file_path": "src/auth/session.test.ts"
+      },
+      "timestamp": "17:40:12",
+      "duration": "18s",
+      "summary": "Read the failing session expiry test before changing production code.",
+      "result": {
+        "text": "Expected refresh token expiry to use the mocked clock."
+      }
+    },
+    {
+      "tool": "Read",
+      "input": {
+        "file_path": "src/auth/token.ts"
+      },
+      "timestamp": "17:40:41",
+      "duration": "22s",
+      "summary": "Checked token creation to find where expiry timestamps are calculated."
+    },
+    {
+      "tool": "apply_patch",
+      "input": {
+        "file_path": "src/auth/token.ts",
+        "patch": "- const expiresAt = Date.now() + ttlMs\n+ const expiresAt = clock.now() + ttlMs"
+      },
+      "timestamp": "17:42:03",
+      "duration": "51s",
+      "summary": "Changed token expiry calculation to use the injected clock."
+    },
+    {
+      "tool": "Bash",
+      "input": {
+        "command": "npm test -- session.test.ts"
+      },
+      "timestamp": "17:43:18",
+      "duration": "36s",
+      "summary": "Ran the targeted auth session test.",
+      "output": "FAIL src/auth/session.test.ts\nExpected expiry 15 minutes from mocked time."
+    },
+    {
+      "tool": "Edit",
+      "input": {
+        "file_path": "src/auth/session.test.ts"
+      },
+      "timestamp": "17:44:20",
+      "duration": "1m 04s",
+      "summary": "Updated the refresh-token fixture to use the deterministic clock."
+    },
+    {
+      "tool": "Bash",
+      "input": {
+        "command": "npm test && npm run typecheck"
+      },
+      "timestamp": "17:46:02",
+      "duration": "2m 12s",
+      "summary": "Ran full verification after the fixture alignment.",
+      "output": "PASS src/auth/session.test.ts\nPASS src/auth/token.test.ts\nTypecheck: clean"
+    },
+    {
+      "tool": "Summarize",
+      "timestamp": "17:48:34",
+      "duration": "20s",
+      "summary": "Generated a PR-ready summary with changed files, commands, and risk notes."
+    }
+  ]
+}

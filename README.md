@@ -133,6 +133,9 @@ npm run agentscope -- validate .agentscope/example.trace.json
 # Import a JSONL action log
 npm run agentscope -- import-jsonl examples/generic-agent.jsonl
 
+# Import a Claude/Codex-style session JSON export
+npm run agentscope -- import-session examples/agent-session.json
+
 # Generate a Markdown summary from a trace
 npm run agentscope -- summarize --input examples/auth-fix.trace.json --dry-run
 ```
@@ -149,7 +152,7 @@ The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in 
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
-For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), with adapters for Claude Code, Codex, Cursor, and Aider planned. See [`docs/generic-jsonl.md`](docs/generic-jsonl.md) for a step-by-step guide on formatting your own agent logs.
+For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), and the Session JSON adapter (`import-session`) can import common Claude/Codex-style tool-call exports. See [`docs/generic-jsonl.md`](docs/generic-jsonl.md) and [`docs/session-json.md`](docs/session-json.md) for step-by-step guides.
 
 ## GitHub PR Comments
 
@@ -196,6 +199,9 @@ npm run agentscope -- validate .agentscope/*.trace.json
 # Generate a PR-ready Markdown summary
 npm run agentscope -- summarize --input .agentscope/*.trace.json --dry-run
 
+# Import an agent session export
+npm run agentscope -- import-session examples/agent-session.json
+
 # View in the Web UI
 npm run dev
 # Then import the trace via the Import button or drag-and-drop
@@ -213,10 +219,11 @@ Which agent adapter should AgentScope support first? Vote or leave context in [t
 - [x] Publish the AgentScope trace schema
 - [x] CLI recorder for shell commands and test runs
 - [x] [Generic JSONL adapter](docs/generic-jsonl.md) for tool-call level traces
+- [x] [Session JSON adapter](docs/session-json.md) for Claude/Codex-style exports
 - [x] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
-- [ ] [More adapters](docs/adapters.md) for Claude Code, Codex, Aider, Cursor
+- [ ] Native adapters for Claude Code, Codex, Aider, Cursor
 
 ## Stack
 

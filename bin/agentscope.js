@@ -13,6 +13,7 @@ Usage:
   npm run agentscope -- record -- <command> [args...]
   npm run agentscope -- validate <trace-file>
   npm run agentscope -- import-jsonl <input.jsonl>
+  npm run agentscope -- import-session <input.json>
   npm run agentscope -- summarize --input <trace-file> [--dry-run] [--marker <marker>]
 
 Examples:
@@ -20,6 +21,7 @@ Examples:
   npm run agentscope -- record -- npm run build
   npm run agentscope -- validate .agentscope/example.trace.json
   npm run agentscope -- import-jsonl examples/generic-agent.jsonl
+  npm run agentscope -- import-session examples/agent-session.json
   npm run agentscope -- summarize --input examples/auth-fix.trace.json --dry-run
 `)
 }
@@ -415,6 +417,280 @@ function importJsonl(jsonlPath) {
   console.log(`AgentScope trace written to ${outPath}`)
 }
 
+function readPath(source, path) {
+  let current = source
+  for (const key of path) {
+    if (!isObject(current) && !Array.isArray(current)) return undefined
+    current = current[key]
+  }
+  return current
+}
+
+function readFirstString(source, paths) {
+  for (const path of paths) {
+    const value = readPath(source, path)
+    if (isString(value) && value.length > 0) return value
+  }
+  return undefined
+}
+
+function readFirstNumber(source, paths) {
+  for (const path of paths) {
+    const value = readPath(source, path)
+    if (isNumber(value)) return value
+  }
+  return undefined
+}
+
+function readFirstObject(source, paths) {
+  for (const path of paths) {
+    const value = readPath(source, path)
+    if (isObject(value)) return value
+  }
+  return {}
+}
+
+function stringifyContent(value) {
+  if (value === undefined || value === null) return ''
+  if (isString(value)) return value
+  if (Array.isArray(value)) {
+    return value.map((item) => {
+      if (isString(item)) return item
+      if (isObject(item)) return readFirstString(item, [['text'], ['content'], ['message']]) ?? ''
+      return ''
+    }).filter(Boolean).join('\n')
+  }
+  if (isObject(value)) {
+    return readFirstString(value, [['text'], ['content'], ['message'], ['output']]) ?? JSON.stringify(value)
+  }
+  return String(value)
+}
+
+function compactWhitespace(value) {
+  return value.replace(/\s+/g, ' ').trim()
+}
+
+function getSessionEntries(raw) {
+  if (Array.isArray(raw)) return raw
+
+  for (const field of ['events', 'messages', 'actions', 'entries', 'toolCalls', 'tool_calls', 'steps']) {
+    if (Array.isArray(raw[field])) return raw[field]
+  }
+
+  return []
+}
+
+function inferSessionAgent(raw, entries) {
+  const explicit = readFirstString(raw, [['agent'], ['metadata', 'agent'], ['source'], ['model'], ['session', 'agent']])
+  if (explicit) return explicit
+
+  const sample = JSON.stringify(entries.slice(0, 8)).toLowerCase()
+  if (sample.includes('claude')) return 'Claude Code'
+  if (sample.includes('codex')) return 'Codex'
+  return 'Agent Session'
+}
+
+function inferSessionStatus(actions) {
+  const hasFailed = actions.some(a => a.type === 'test_failed')
+  const hasPassed = actions.some(a => a.type === 'test_passed')
+  return hasFailed ? 'failed' : hasPassed ? 'passed' : 'warning'
+}
+
+function normalizeSessionEntry(entry, index, defaultTimestamp) {
+  if (!isObject(entry)) return null
+
+  const input = readFirstObject(entry, [['input'], ['tool_input'], ['arguments'], ['args'], ['params'], ['request']])
+  const result = readFirstObject(entry, [['result'], ['response'], ['tool_result']])
+  const toolName = readFirstString(entry, [
+    ['tool'],
+    ['toolName'],
+    ['tool_name'],
+    ['name'],
+    ['type'],
+    ['action'],
+    ['function', 'name'],
+  ]) ?? ''
+  const title = readFirstString(entry, [
+    ['title'],
+    ['summary'],
+    ['message'],
+    ['content', 'title'],
+  ]) ?? toolName
+  const file = readFirstString(entry, [
+    ['file'],
+    ['path'],
+    ['file_path'],
+    ['filepath'],
+    ['target_file'],
+    ['input', 'file'],
+    ['input', 'path'],
+    ['input', 'file_path'],
+    ['tool_input', 'file_path'],
+    ['arguments', 'file_path'],
+    ['params', 'file'],
+  ]) ?? readFirstString(input, [['file'], ['path'], ['file_path'], ['filepath'], ['target_file']])
+  const command = readFirstString(entry, [
+    ['command'],
+    ['cmd'],
+    ['input', 'command'],
+    ['tool_input', 'command'],
+    ['arguments', 'command'],
+    ['params', 'command'],
+  ]) ?? readFirstString(input, [['command'], ['cmd'], ['script']])
+  const diff = readFirstString(entry, [
+    ['diff'],
+    ['patch'],
+    ['input', 'diff'],
+    ['input', 'patch'],
+    ['tool_input', 'patch'],
+    ['arguments', 'patch'],
+  ]) ?? readFirstString(input, [['diff'], ['patch']])
+
+  const output = [
+    stringifyContent(readPath(entry, ['output'])),
+    stringifyContent(readPath(entry, ['stdout'])),
+    stringifyContent(readPath(entry, ['stderr'])),
+    stringifyContent(readPath(entry, ['content'])),
+    Object.keys(result).length > 0 ? stringifyContent(result) : '',
+  ].filter(Boolean).join('\n').trim()
+
+  const source = [
+    toolName,
+    title,
+    file,
+    command,
+    output.slice(0, 500),
+  ].filter(Boolean).join(' ').toLowerCase()
+
+  let type = ''
+  if (source.match(/\b(summary|summarize|report|wrap[-_ ]?up)\b/)) {
+    type = 'generate_summary'
+  } else if (source.match(/\b(read|view|open|cat|glob|grep|search)\b/) && file) {
+    type = 'read_file'
+  } else if (source.match(/\b(edit|write|replace|patch|multi[_-]?edit|apply_patch)\b/) || diff) {
+    type = 'edit_file'
+  } else if (source.match(/\b(bash|shell|terminal|exec|command|run_command)\b/) || command) {
+    const failed = source.match(/\b(fail|failed|failure|error|exit code 1|exit_code\":1)\b/)
+    const passed = source.match(/\b(pass|passed|success|succeeded|exit code 0|exit_code\":0)\b/)
+    const looksLikeTest = source.match(/\b(test|vitest|jest|pytest|typecheck|lint|check)\b/)
+    type = failed && looksLikeTest ? 'test_failed' : passed && looksLikeTest ? 'test_passed' : 'run_command'
+  }
+
+  if (!type) return null
+
+  const timestamp = readFirstString(entry, [['timestamp'], ['time'], ['startedAt'], ['started_at'], ['created_at']]) ?? defaultTimestamp
+  const duration = readFirstString(entry, [['duration'], ['elapsed'], ['duration_ms']])
+    ?? (readFirstNumber(entry, [['durationMs'], ['duration_ms'], ['elapsed_ms']]) !== undefined
+      ? formatDuration(readFirstNumber(entry, [['durationMs'], ['duration_ms'], ['elapsed_ms']]))
+      : '0s')
+  const risk = isString(entry.risk) && validRisks.has(entry.risk)
+    ? entry.risk
+    : type === 'edit_file' || type === 'test_failed' ? 'medium' : 'low'
+  const actionTitle = title || (
+    type === 'read_file' ? `Read ${file}` :
+      type === 'edit_file' ? `Edit ${file ?? 'file'}` :
+        type === 'generate_summary' ? 'Generate summary' :
+          command ? `Run ${command}` : 'Imported session action'
+  )
+  const details = isStringArray(entry.details) ? entry.details : []
+  const summary = readFirstString(entry, [['summary'], ['description']])
+    ?? compactWhitespace(actionTitle)
+
+  return {
+    id: `a${index + 1}`,
+    type,
+    title: actionTitle,
+    timestamp,
+    duration,
+    risk,
+    summary,
+    details,
+    file: file || undefined,
+    command: command || undefined,
+    output: output || undefined,
+    diff: diff || undefined,
+  }
+}
+
+function importSession(sessionPath) {
+  if (!sessionPath) {
+    console.error('Missing input file. Use: npm run agentscope -- import-session <input.json>')
+    exit(1)
+  }
+
+  const startedAt = new Date()
+  const defaultTimestamp = timeOfDay(startedAt)
+  let raw
+  try {
+    raw = JSON.parse(readFileSync(sessionPath, 'utf8').replace(/^\uFEFF/, ''))
+  } catch (error) {
+    console.error(`Invalid session: failed to read or parse "${sessionPath}".`)
+    console.error(error.message)
+    exit(1)
+  }
+
+  if (!isObject(raw) && !Array.isArray(raw)) {
+    console.error('Invalid session: expected a JSON object or array.')
+    exit(1)
+  }
+
+  const entries = getSessionEntries(raw)
+  if (entries.length === 0) {
+    console.error('Invalid session: expected an array or an object with events, messages, actions, entries, toolCalls, tool_calls, or steps.')
+    exit(1)
+  }
+
+  const actions = entries
+    .map((entry, index) => normalizeSessionEntry(entry, index, defaultTimestamp))
+    .filter(Boolean)
+    .map((action, index) => ({ ...action, id: `a${index + 1}` }))
+
+  if (actions.length === 0) {
+    console.error('No supported tool-call actions found in the session file.')
+    exit(1)
+  }
+
+  const status = inferSessionStatus(actions)
+  const uniqueFiles = new Set()
+  let commandCount = 0
+  for (const action of actions) {
+    if (action.type === 'edit_file' && action.file) uniqueFiles.add(action.file)
+    if (action.type === 'run_command' || action.type === 'test_failed' || action.type === 'test_passed') {
+      commandCount++
+    }
+  }
+
+  const fileName = sessionPath.replace(/^.*[\\/]/, '')
+  const trace = {
+    schemaVersion: SCHEMA_VERSION,
+    runs: [
+      {
+        id: `run-session-${timestampForFile(startedAt)}`,
+        title: readFirstString(raw, [['title'], ['task'], ['summary'], ['metadata', 'title']]) ?? `Import session trace: ${fileName}`,
+        agent: inferSessionAgent(raw, entries),
+        branch: readFirstString(raw, [['branch'], ['metadata', 'branch']]) ?? getGitBranch(),
+        status,
+        trustScore: status === 'passed' ? 85 : status === 'failed' ? 35 : 60,
+        startedAt: readFirstString(raw, [['startedAt'], ['started_at'], ['created_at'], ['metadata', 'startedAt']]) ?? startedAt.toISOString(),
+        duration: readFirstString(raw, [['duration'], ['elapsed'], ['metadata', 'duration']]) ?? '0s',
+        cost: readFirstString(raw, [['cost'], ['metadata', 'cost']]) ?? '$0.00',
+        filesChanged: uniqueFiles.size,
+        commands: commandCount,
+        actions,
+      },
+    ],
+  }
+
+  const result = validateTraceObject(trace)
+  if (!result.ok) {
+    console.error(result.message)
+    exit(1)
+  }
+
+  const outPath = writeTrace(trace, startedAt)
+  console.log(`AgentScope trace written to ${outPath}`)
+}
+
 const statusLabels = {
   passed: 'PASSED',
   failed: 'FAILED',
@@ -710,6 +986,11 @@ if (subcommand === 'validate') {
 
 if (subcommand === 'import-jsonl') {
   importJsonl(separator)
+  exit(0)
+}
+
+if (subcommand === 'import-session') {
+  importSession(separator)
   exit(0)
 }
 
