@@ -53,7 +53,7 @@ Run through this list before tagging a GitHub release.
 - [x] Mocked GitHub comment create/update paths tested
 - [x] `npm run lint` passes
 - [x] `npm run build` passes
-- [ ] Git tag created: `git tag v0.5.0`
+- [x] Git tag created: `git tag v0.5.0`
 - [ ] GitHub Release published with `docs/release-notes/v0.5.0.md` content
 
 ## Every release
