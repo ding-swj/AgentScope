@@ -239,6 +239,7 @@ Which agent adapter should AgentScope support first? Vote or leave context in [t
 
 ```bash
 npm run lint
+npm test
 npm run build
 ```
 

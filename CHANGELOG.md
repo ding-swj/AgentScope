@@ -2,6 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **CLI smoke tests.** `npm test` now runs Node's built-in test runner against the CLI import, validate, and summarize flows.
+
 ## [0.6.0] - 2026-06-06
 
 ### Added
