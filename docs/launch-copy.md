@@ -49,19 +49,24 @@ AI coding agents are getting good enough to ship real PRs. But the review experi
 
 I built AgentScope to make those runs easier to inspect. It is a browser-based trace viewer that shows agent actions in chronological order: file reads, code edits, command runs, test passes/failures, and final summaries.
 
-What it does today (v0.3.0):
+What it does today (v0.7.0):
 
 - Web UI: interactive timeline with trust score, run list, action detail panel, and diff/output viewer
 - CLI recorder: `npm run agentscope -- record -- npm test` wraps a shell command and produces a trace file
 - Trace validation: checks required fields, enums, and basic value ranges
-- GitHub Actions workflow: record and validate traces in CI, then upload artifacts
+- Generic JSONL adapter: import line-delimited agent action logs
+- Session JSON adapter: import Claude/Codex-style session exports
+- PR summary comments: `summarize --dry-run` for local preview, or post live comments in GitHub Actions
+- GitHub Actions workflow: record, validate, summarize, and comment on PRs in CI
+- CLI test suite: 13 tests covering import, validate, summarize, and record with happy and error paths
 - Drag-and-drop trace import in the browser
 
 What it does not do yet:
 
-- It does not capture full agent IDE/tool-call activity. The CLI recorder tracks shell commands for now.
-- GitHub Actions uploads artifacts but does not comment on PRs automatically.
-- The trace schema is still early and will evolve.
+- Native Claude Code and Codex adapters are still planned (the Session JSON adapter is a permissive bridge)
+- No VS Code extension yet
+- No execution graph view for read/edit/verify relationships
+- The Web UI still shows mock data by default; real traces are imported via the Import button or drag-and-drop
 
 It is open source under the MIT license. If you use AI coding agents regularly and wish you could see more than the final diff, I would appreciate feedback.
 
@@ -80,7 +85,9 @@ GitHub: https://github.com/ding-swj/AgentScope
 
 所以我做了 AgentScope，一个开源的可视化 trace viewer，把 agent run 变成可以查看和回放的时间线。
 
-目前 v0.3.0 支持 Web UI、CLI recorder、trace validation、GitHub Actions artifact workflow，以及浏览器拖拽导入 trace 文件。也有不少限制：CLI recorder 目前还是 shell command 级别，不是 agent IDE 调用级别；GitHub Actions 现在只上传 artifact，还不会自动评论 PR；界面目前偏桌面端。
+目前 v0.7.0 支持 Web UI、CLI recorder、trace validation、Generic JSONL adapter、Session JSON adapter（可导入 Claude/Codex 风格的 session 导出）、PR summary comment（dry-run 本地预览或 GitHub Actions 自动评论）、CLI 测试套件（13 个测试覆盖 happy path 和 error path），以及浏览器拖拽导入 trace 文件。
+
+限制：native Claude Code / Codex adapter 还在计划中（Session JSON adapter 是一个容错性较强的桥接层）；VS Code 扩展还没做；执行图（execution graph）还没做；Web UI 默认展示 mock 数据，真实 trace 通过 Import 按钮或拖拽导入。
 
 技术栈是 React + Vite + TypeScript + Tailwind CSS，MIT 协议。如果你平时也用 Claude Code / Codex / Cursor / Aider，欢迎试试看，也欢迎提建议。
 

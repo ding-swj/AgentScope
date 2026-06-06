@@ -93,7 +93,10 @@ AgentScope UI
 
 ### Phase 3: Ecosystem
 
-- [ ] GitHub Action summary for pull requests
+- [x] GitHub Action summary for pull requests (dry-run + live PR comment since v0.5.0)
+- [x] Generic JSONL adapter (`import-jsonl`) for tool-call level traces (since v0.4.0)
+- [x] Session JSON adapter (`import-session`) for Claude/Codex-style exports (since v0.6.0)
+- [x] CLI test suite covering import, validate, summarize, and record flows (since v0.7.0)
 - [ ] VS Code extension
 - [ ] Execution graph
 - [ ] CLI command: `agentscope open trace.json`
