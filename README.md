@@ -41,6 +41,13 @@ AgentScope helps answer:
 
 Think of it as developer observability for AI coding agents.
 
+## Who Is It For?
+
+- Developers reviewing AI-generated patches
+- Open-source maintainers who want more context than a final diff
+- Agent tool builders who need a simple trace format and viewer
+- Teams experimenting with AI coding agents in CI or PR workflows
+
 ## Features
 
 - Interactive timeline for agent actions
@@ -215,15 +222,23 @@ Which agent adapter should AgentScope support first? Vote or leave context in [t
 
 ## Roadmap
 
-- [x] Import external trace JSON files
-- [x] Publish the AgentScope trace schema
-- [x] CLI recorder for shell commands and test runs
-- [x] [Generic JSONL adapter](docs/generic-jsonl.md) for tool-call level traces
-- [x] [Session JSON adapter](docs/session-json.md) for Claude/Codex-style exports
-- [x] GitHub Action integration for PR trace reports
-- [ ] Execution graph for file reads, edits, and verification steps
-- [ ] VS Code extension
-- [ ] Native adapters for Claude Code, Codex, Aider, Cursor
+See [`docs/roadmap.md`](docs/roadmap.md) for the full roadmap.
+
+Near-term priorities:
+
+- Native Claude Code / Codex adapters
+- Timeline search and filtering
+- Trace quality checks
+- PR comment improvements
+
+Completed foundations:
+
+- Import external trace JSON files
+- Publish the AgentScope trace schema
+- CLI recorder for shell commands and test runs
+- [Generic JSONL adapter](docs/generic-jsonl.md)
+- [Session JSON adapter](docs/session-json.md)
+- GitHub Action integration for PR trace reports
 
 ## Stack
 
