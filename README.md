@@ -22,6 +22,10 @@ AI coding agents are powerful, but their behavior is still hard to audit. AgentS
 
 Inspect agent runs, replay timeline steps, drill into failures, and export a PR-ready report.
 
+## Posts
+
+- [我做了一个 AI Coding Agent 的可视化 Trace Viewer](https://zhuanlan.zhihu.com/p/2046588260470854469)
+
 ## Why AgentScope?
 
 When an agent produces a patch, reviewers usually see the final diff, not the path that led there.
