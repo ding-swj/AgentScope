@@ -17,7 +17,7 @@ The current focus is turning AgentScope from a useful viewer into a reliable wor
 
 ### 1. Native Claude Code / Codex Adapters
 
-Status: planned
+Status: planned ([#5](https://github.com/ding-swj/AgentScope/issues/5))
 
 The Session JSON adapter is a permissive bridge for common tool-call exports. Native adapters should preserve richer metadata when stable export samples are available.
 
@@ -30,7 +30,7 @@ Expected work:
 
 ### 2. Timeline Search and Filtering
 
-Status: planned
+Status: planned ([#6](https://github.com/ding-swj/AgentScope/issues/6))
 
 Large traces need fast ways to find the important parts.
 
@@ -43,7 +43,7 @@ Expected work:
 
 ### 3. Trace Quality Checks
 
-Status: planned
+Status: planned ([#7](https://github.com/ding-swj/AgentScope/issues/7))
 
 Validation currently checks structural correctness. The next layer should flag suspicious or incomplete traces.
 
@@ -56,7 +56,7 @@ Expected work:
 
 ### 4. PR Comment Improvements
 
-Status: planned
+Status: planned ([#8](https://github.com/ding-swj/AgentScope/issues/8))
 
 The current PR comment summary is useful, but still basic.
 
@@ -91,4 +91,3 @@ Good first issues should be small, testable, and avoid private agent data:
 - Replacing GitHub review.
 - Building a full observability backend.
 - Storing traces on a hosted service.
-

@@ -226,10 +226,10 @@ See [`docs/roadmap.md`](docs/roadmap.md) for the full roadmap.
 
 Near-term priorities:
 
-- Native Claude Code / Codex adapters
-- Timeline search and filtering
-- Trace quality checks
-- PR comment improvements
+- [Native Claude Code / Codex adapters](https://github.com/ding-swj/AgentScope/issues/5)
+- [Timeline search and filtering](https://github.com/ding-swj/AgentScope/issues/6)
+- [Trace quality checks](https://github.com/ding-swj/AgentScope/issues/7)
+- [PR comment improvements](https://github.com/ding-swj/AgentScope/issues/8)
 
 Completed foundations:
 
