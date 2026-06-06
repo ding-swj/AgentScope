@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
 jobs:
   record:
     runs-on: ubuntu-latest
@@ -21,9 +26,17 @@ jobs:
 
       # Replace the command below with the command you want to record.
       # Examples: npm test, npm run lint, npm run build, npm run ci
-      - run: npm run agentscope -- record -- npm run lint
+      - id: record
+        continue-on-error: true
+        run: npm run agentscope -- record -- npm run lint
 
       - run: npm run agentscope -- validate .agentscope/*.trace.json
+        if: always()
+
+      - run: npm run agentscope -- summarize --input .agentscope/*.trace.json
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -31,3 +44,7 @@ jobs:
           name: agentscope-trace
           path: .agentscope/*.trace.json
           retention-days: 30
+
+      - name: Preserve recorded command status
+        if: steps.record.outcome == 'failure'
+        run: exit 1

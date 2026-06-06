@@ -13,7 +13,7 @@ Usage:
   npm run agentscope -- record -- <command> [args...]
   npm run agentscope -- validate <trace-file>
   npm run agentscope -- import-jsonl <input.jsonl>
-  npm run agentscope -- summarize --input <trace-file> --dry-run
+  npm run agentscope -- summarize --input <trace-file> [--dry-run] [--marker <marker>]
 
 Examples:
   npm run agentscope -- record -- npm run lint
@@ -422,6 +422,7 @@ const statusLabels = {
 }
 
 const maxSummaryActions = 20
+const defaultSummaryMarker = '<!-- agentscope-summary -->'
 
 function escapeTable(value) {
   return String(value ?? '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' ')
@@ -523,13 +524,16 @@ function generateTraceSummary(trace) {
 }
 
 function parseSummarizeOptions(args) {
-  const options = { input: '', dryRun: false }
+  const options = { input: '', dryRun: false, marker: defaultSummaryMarker }
   for (let i = 0; i < args.length; i += 1) {
     if (args[i] === '--input') {
       options.input = args[i + 1] ?? ''
       i += 1
     } else if (args[i] === '--dry-run') {
       options.dryRun = true
+    } else if (args[i] === '--marker') {
+      options.marker = args[i + 1] ?? ''
+      i += 1
     } else {
       console.error(`Unknown summarize option: ${args[i]}`)
       exit(1)
@@ -538,16 +542,109 @@ function parseSummarizeOptions(args) {
   return options
 }
 
-function summarize(args) {
+function githubApiHeaders(token) {
+  return {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+    'User-Agent': 'AgentScope CLI',
+    'X-GitHub-Api-Version': '2022-11-28',
+  }
+}
+
+function getPullRequestNumber() {
+  const eventPath = process.env.GITHUB_EVENT_PATH
+  if (eventPath) {
+    try {
+      const event = JSON.parse(readFileSync(eventPath, 'utf8'))
+      if (event.pull_request?.number) return String(event.pull_request.number)
+      if (event.number) return String(event.number)
+    } catch {
+      // Fall through to GITHUB_REF parsing.
+    }
+  }
+
+  const ref = process.env.GITHUB_REF ?? ''
+  const match = ref.match(/^refs\/pull\/(\d+)\/(?:merge|head)$/)
+  return match?.[1] ?? ''
+}
+
+async function githubRequest(url, { method = 'GET', token, body } = {}) {
+  const response = await fetch(url, {
+    method,
+    headers: githubApiHeaders(token),
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`GitHub API ${method} ${url} failed with ${response.status}: ${text}`)
+  }
+
+  if (response.status === 204) return null
+  return response.json()
+}
+
+async function postPullRequestSummary(markdown, marker) {
+  const token = process.env.GITHUB_TOKEN
+  const repository = process.env.GITHUB_REPOSITORY ?? ''
+  const prNumber = getPullRequestNumber()
+
+  if (!token) {
+    throw new Error('GITHUB_TOKEN is required when --dry-run is not set.')
+  }
+
+  const [owner, repo] = repository.split('/')
+  if (!owner || !repo) {
+    throw new Error('GITHUB_REPOSITORY must be set to "owner/repo".')
+  }
+
+  if (!prNumber) {
+    throw new Error('Could not detect pull request number from GITHUB_EVENT_PATH or GITHUB_REF.')
+  }
+
+  const baseUrl = `https://api.github.com/repos/${owner}/${repo}`
+  const comments = await githubRequest(`${baseUrl}/issues/${prNumber}/comments`, { token })
+  const existing = comments.find((comment) =>
+    comment.user?.type === 'Bot' &&
+    typeof comment.body === 'string' &&
+    comment.body.includes(marker),
+  )
+
+  const body = `${marker}\n\n${markdown}`
+  if (existing) {
+    await githubRequest(`${baseUrl}/issues/comments/${existing.id}`, {
+      method: 'PATCH',
+      token,
+      body: { body },
+    })
+    console.log(`Updated AgentScope summary comment on PR #${prNumber}.`)
+    return
+  }
+
+  await githubRequest(`${baseUrl}/issues/${prNumber}/comments`, {
+    method: 'POST',
+    token,
+    body: { body },
+  })
+  console.log(`Created AgentScope summary comment on PR #${prNumber}.`)
+}
+
+async function summarize(args) {
   const options = parseSummarizeOptions(args)
 
   if (!options.input) {
-    console.error('Missing input file. Use: npm run agentscope -- summarize --input <trace-file> --dry-run')
+    console.error('Missing input file. Use: npm run agentscope -- summarize --input <trace-file> [--dry-run]')
     exit(1)
   }
 
-  if (!options.dryRun) {
-    console.error('The summarize command currently supports --dry-run only. GitHub PR posting is planned for a later phase.')
+  if (!options.marker) {
+    console.error('The --marker value cannot be empty.')
+    exit(1)
+  }
+
+  if (!options.dryRun && typeof fetch !== 'function') {
+    console.error('Global fetch is required to post GitHub comments. Use Node.js 18 or newer.')
     exit(1)
   }
 
@@ -566,7 +663,13 @@ function summarize(args) {
     exit(1)
   }
 
-  console.log(generateTraceSummary(raw))
+  const markdown = generateTraceSummary(raw)
+  if (options.dryRun) {
+    console.log(markdown)
+    return
+  }
+
+  await postPullRequestSummary(markdown, options.marker)
 }
 
 function validate(tracePath) {
@@ -611,8 +714,13 @@ if (subcommand === 'import-jsonl') {
 }
 
 if (subcommand === 'summarize') {
-  summarize([separator, ...rest].filter(Boolean))
-  exit(0)
+  try {
+    await summarize([separator, ...rest].filter(Boolean))
+    exit(0)
+  } catch (error) {
+    console.error(error.message)
+    exit(1)
+  }
 }
 
 if (subcommand !== 'record') {

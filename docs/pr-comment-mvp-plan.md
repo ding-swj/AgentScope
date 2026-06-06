@@ -32,15 +32,15 @@ Large traces are truncated in the actions table after 20 actions.
 
 ## Phase 2: PR Comment Posting
 
-Status: planned.
+Status: implemented.
 
-Target command:
+Command:
 
 ```bash
 npm run agentscope -- summarize --input <trace.json>
 ```
 
-When `--dry-run` is omitted, a future implementation will:
+When `--dry-run` is omitted, AgentScope will:
 
 - Read `GITHUB_TOKEN`.
 - Detect PR context from GitHub Actions environment variables.
@@ -94,3 +94,10 @@ Phase 2:
 - Run the workflow once and verify a comment is created.
 - Run it again and verify the existing comment is updated.
 - Delete the comment and verify the next run creates a new one.
+
+Local environment checks:
+
+```bash
+npm run agentscope -- summarize --input examples/auth-fix.trace.json
+# Expected outside GitHub Actions: GITHUB_TOKEN is required when --dry-run is not set.
+```

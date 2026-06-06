@@ -151,6 +151,33 @@ For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
 For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), with adapters for Claude Code, Codex, Cursor, and Aider planned. See [`docs/generic-jsonl.md`](docs/generic-jsonl.md) for a step-by-step guide on formatting your own agent logs.
 
+## GitHub PR Comments
+
+AgentScope can turn a trace file into a Markdown PR summary. In local dry-run mode:
+
+```bash
+npm run agentscope -- summarize --input examples/auth-fix.trace.json --dry-run
+```
+
+In GitHub Actions, omit `--dry-run` to create or update one AgentScope comment on the PR:
+
+```yaml
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+steps:
+  - uses: actions/checkout@v4
+  - run: npm ci
+  - run: npm run agentscope -- import-jsonl examples/generic-agent.jsonl
+  - run: npm run agentscope -- summarize --input .agentscope/*.trace.json
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Repeated workflow runs update the existing AgentScope comment instead of creating duplicates.
+
 ## GitHub Actions
 
 AgentScope can run inside CI to record traces, validate them, and upload them as artifacts. See [`docs/github-actions.md`](docs/github-actions.md) for the setup guide and [`examples/github-actions/record-trace.yml`](examples/github-actions/record-trace.yml) for a copy-pasteable workflow.
