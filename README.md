@@ -1,13 +1,14 @@
 # AgentScope
 
 ![Release](https://img.shields.io/github/v/release/ding-swj/AgentScope)
+[![CI](https://github.com/ding-swj/AgentScope/actions/workflows/ci.yml/badge.svg)](https://github.com/ding-swj/AgentScope/actions/workflows/ci.yml)
 ![License](https://img.shields.io/github/license/ding-swj/AgentScope)
 ![Built with React](https://img.shields.io/badge/built%20with-React-61dafb)
 ![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178c6)
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) · [Release notes](docs/release-notes/v0.3.0.md) · [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.3.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
