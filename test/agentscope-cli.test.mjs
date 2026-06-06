@@ -157,7 +157,7 @@ test('quality check warns on edits without verification', () => {
 
     assert.equal(result.status, 0)
     assert.match(result.stdout, /Valid AgentScope trace:/)
-    assert.match(result.stderr, /Warning: Run \[0\]: Run has 1 edit\(s\) but no verification command was run\./)
+    assert.match(result.stderr, /Warning: Run \[1\]: Run has 1 edit\(s\) but no verification command was run\./)
   })
 })
 
@@ -173,7 +173,7 @@ test('quality check warns on failed tests without recovery', () => {
     const result = runCliResult(['validate', fixture], { cwd: dir })
 
     assert.equal(result.status, 0)
-    assert.match(result.stderr, /Warning: Run \[0\]: Run has failed test\(s\) with no later passing test\./)
+    assert.match(result.stderr, /Warning: Run \[1\]: Run has failed test\(s\) with no later passing test\./)
   })
 })
 
@@ -196,7 +196,26 @@ test('quality check warns on high-risk edits without evidence', () => {
     const result = runCliResult(['validate', fixture], { cwd: dir })
 
     assert.equal(result.status, 0)
-    assert.match(result.stderr, /Warning: Run \[0\]: Run has high-risk edit\(s\) with no evidence notes\./)
+    assert.match(result.stderr, /Warning: Run \[1\]: Run has high-risk edit\(s\) with no evidence notes\./)
+  })
+})
+
+test('quality check reports multiple warnings for the same run', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'multiple-warnings.trace.json', [
+      {
+        type: 'edit_file',
+        title: 'Edit auth logic',
+        file: 'src/auth.ts',
+        risk: 'high',
+        details: [],
+      },
+    ])
+    const result = runCliResult(['validate', fixture], { cwd: dir })
+
+    assert.equal(result.status, 0)
+    assert.match(result.stderr, /Run \[1\]: Run has 1 edit\(s\) but no verification command was run\./)
+    assert.match(result.stderr, /Run \[1\]: Run has high-risk edit\(s\) with no evidence notes\./)
   })
 })
 
@@ -259,7 +278,7 @@ test('summarize --dry-run renders trace quality warnings', () => {
     const output = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
 
     assert.match(output, /### Trace Quality Warnings/)
-    assert.match(output, /Run has 1 edit\(s\) but no verification command was run\./)
+    assert.match(output, /Run \[1\]: Run has 1 edit\(s\) but no verification command was run\./)
   })
 })
 

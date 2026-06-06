@@ -170,7 +170,7 @@ function validateRun(run, runIndex) {
 }
 
 function collectRunQualityWarnings(run, runIndex) {
-  const prefix = `Run [${runIndex}]`
+  const prefix = `Run [${runIndex + 1}]`
   const warnings = []
   const actions = run.actions
 
@@ -201,6 +201,10 @@ function collectRunQualityWarnings(run, runIndex) {
   return warnings
 }
 
+function collectTraceQualityWarnings(trace) {
+  return trace.runs.flatMap((run, runIndex) => collectRunQualityWarnings(run, runIndex))
+}
+
 function validateTraceObject(raw) {
   if (!isObject(raw)) {
     return { ok: false, message: 'Invalid trace: expected a JSON object at the top level.', warnings: [] }
@@ -218,14 +222,12 @@ function validateTraceObject(raw) {
     return { ok: false, message: 'Invalid trace: the "runs" array is empty.', warnings: [] }
   }
 
-  const warnings = []
   for (let runIndex = 0; runIndex < raw.runs.length; runIndex += 1) {
     const error = validateRun(raw.runs[runIndex], runIndex)
     if (error) return { ok: false, message: error, warnings: [] }
-    warnings.push(...collectRunQualityWarnings(raw.runs[runIndex], runIndex))
   }
 
-  return { ok: true, warnings }
+  return { ok: true, warnings: collectTraceQualityWarnings(raw) }
 }
 
 function buildTrace({ commandText, startedAt, duration, exitCode, stdout, stderr }) {
@@ -812,8 +814,7 @@ function renderRunSummary(run, headingLevel = 2) {
 }
 
 function generateTraceSummary(trace) {
-  const result = validateTraceObject(trace)
-  const warnings = result.ok ? result.warnings : []
+  const warnings = collectTraceQualityWarnings(trace)
   const warningLines = renderQualityWarnings(warnings)
 
   if (trace.runs.length === 1) {
