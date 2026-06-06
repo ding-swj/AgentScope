@@ -1,0 +1,12 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: What problem are you solving?
+      description: What pain point do you have with AI coding agents today?
+  - type: textarea
+    attributes:
+      label: What should AgentScope do?
+      description: Describe the feature or behavior

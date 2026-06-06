@@ -1,0 +1,16 @@
+name: Bug Report
+description: Report a bug in AgentScope
+labels: [bug]
+body:
+  - type: input
+    attributes:
+      label: CLI version
+      description: Run `npm run agentscope -- --help` and paste the version info
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: What commands did you run? What did you expect vs what happened?
+  - type: textarea
+    attributes:
+      label: Trace file
+      description: If the issue involves a trace file, paste the first 20 lines (anonymized)
