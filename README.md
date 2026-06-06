@@ -143,6 +143,8 @@ The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in 
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
+For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md) -- adapters are planned for Claude Code, Codex, Cursor, and Aider.
+
 ## GitHub Actions
 
 AgentScope can run inside CI to record traces, validate them, and upload them as artifacts. See [`docs/github-actions.md`](docs/github-actions.md) for the setup guide and [`examples/github-actions/record-trace.yml`](examples/github-actions/record-trace.yml) for a copy-pasteable workflow.
@@ -173,7 +175,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/
 - [ ] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
-- [ ] Adapters for Claude Code, Codex, Aider, Cursor, and more
+- [ ] [Adapters](docs/adapters.md) for Claude Code, Codex, Aider, Cursor, and more
 
 ## Stack
 
