@@ -132,6 +132,9 @@ npm run agentscope -- validate .agentscope/example.trace.json
 
 # Import a JSONL action log
 npm run agentscope -- import-jsonl examples/generic-agent.jsonl
+
+# Generate a Markdown summary from a trace
+npm run agentscope -- summarize --input examples/auth-fix.trace.json --dry-run
 ```
 
 The recorder captures:
