@@ -8,9 +8,11 @@ AgentScope helps developers understand what an AI coding agent read, changed, ra
 
 AI coding agents are powerful, but their behavior is still hard to audit. AgentScope turns each agent run into an interactive timeline so you can understand how a result was produced before you trust it.
 
-## Screenshot
+## Demo
 
-![AgentScope trace viewer](docs/assets/agentscope-screenshot.png)
+![AgentScope demo](docs/assets/agentscope-demo.gif)
+
+Inspect agent runs, replay timeline steps, drill into failures, and export a PR-ready report.
 
 ## Why AgentScope?
 
