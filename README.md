@@ -8,7 +8,7 @@
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.9.0.md) | [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.10.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
@@ -69,12 +69,12 @@ Think of it as developer observability for AI coding agents.
 - `summarize` traces as Markdown for PR review
 - `summarize --dry-run` local PR summary preview
 - Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
-- 21 CLI smoke and error-path tests passing
+- 26 CLI smoke and error-path tests passing
 
-> **New in v0.9.0:** A compact review checklist now appears
-> in every PR summary. Code changes, verification, failure
-> recovery, and high-risk edit evidence at a glance.
-> See [release notes](docs/release-notes/v0.9.0.md).
+> **New in v0.10.0:** CLI error-path test coverage extended
+> from 21 to 26 tests. Record, summarize, and import-session
+> error paths are now locked in.
+> See [release notes](docs/release-notes/v0.10.0.md).
 
 ## Quick Start
 
@@ -212,7 +212,7 @@ AgentScope can run inside CI to record traces, validate them, and upload them as
 
 ## Current Status
 
-AgentScope is in active development. The v0.9.0 release adds a compact review checklist to generated PR summaries, alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, Session JSON adapter, trace quality warnings, drag-and-drop import, CLI test suite, and GitHub Actions integration.
+AgentScope is in active development. The v0.10.0 release extends CLI error-path coverage for record, summarize, and import-session, alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, Session JSON adapter, trace quality warnings, compact review checklist, drag-and-drop import, CLI test suite, and GitHub Actions integration.
 
 ```bash
 # Record a trace
@@ -232,7 +232,7 @@ npm run dev
 # Then import the trace via the Import button or drag-and-drop
 ```
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.9.0.md`](docs/release-notes/v0.9.0.md) for the latest release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.10.0.md`](docs/release-notes/v0.10.0.md) for the latest release notes.
 
 ## Feedback
 

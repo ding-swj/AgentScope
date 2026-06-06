@@ -116,6 +116,19 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: git tag v0.9.0
 - [x] GitHub Release published with docs/release-notes/v0.9.0.md content
 
+## v0.10.0 release
+
+- [x] CHANGELOG.md includes v0.10.0 entry
+- [x] docs/release-notes/v0.10.0.md written
+- [x] README.md links to v0.10.0 release notes
+- [x] 5 new CLI error-path tests covering record, summarize, import-session
+- [x] docs/roadmap.md #7 status updated to since v0.8.0
+- [x] npm test (26 pass, 0 fail)
+- [x] npm run lint passes
+- [x] npm run build passes
+- [ ] Git tag created: git tag v0.10.0
+- [ ] GitHub Release published with docs/release-notes/v0.10.0.md content
+
 ## Every release
 
 - [ ] `npm run lint` passes
