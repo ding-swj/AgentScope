@@ -96,6 +96,45 @@ test('validate accepts the example trace', () => {
   assert.match(output, /Valid AgentScope trace:/)
 })
 
+test('validate reports an error for a missing file', () => {
+  runCliFailure(['validate', join(root, 'nonexistent.trace.json')], {
+    assertError(error) {
+      assert.equal(error.status, 1)
+      assert.match(error.stderr, /failed to read or parse/)
+    },
+  })
+})
+
+test('validate rejects a trace with wrong schemaVersion', () => {
+  withTempDir((dir) => {
+    const fixture = join(dir, 'bad-version.trace.json')
+    writeFileSync(fixture, '{"schemaVersion":"9.9.9","runs":[]}\n', 'utf8')
+
+    runCliFailure(['validate', fixture], {
+      cwd: dir,
+      assertError(error) {
+        assert.equal(error.status, 1)
+        assert.match(error.stderr, /expected schemaVersion "1\.0\.0"/)
+      },
+    })
+  })
+})
+
+test('validate rejects an empty runs array', () => {
+  withTempDir((dir) => {
+    const fixture = join(dir, 'empty-runs.trace.json')
+    writeFileSync(fixture, '{"schemaVersion":"1.0.0","runs":[]}\n', 'utf8')
+
+    runCliFailure(['validate', fixture], {
+      cwd: dir,
+      assertError(error) {
+        assert.equal(error.status, 1)
+        assert.match(error.stderr, /the "runs" array is empty/)
+      },
+    })
+  })
+})
+
 test('summarize --dry-run renders a Markdown summary', () => {
   const output = runCli(['summarize', '--input', authTrace, '--dry-run'])
 
