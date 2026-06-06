@@ -67,7 +67,7 @@ Run through this list before tagging a GitHub release.
 - [x] Validate generated trace: `npm run agentscope -- validate .agentscope/*.trace.json`
 - [x] `npm run lint` passes
 - [x] `npm run build` passes
-- [ ] Git tag created: `git tag v0.6.0`
+- [x] Git tag created: `git tag v0.6.0`
 - [ ] GitHub Release published with `docs/release-notes/v0.6.0.md` content
 
 ## Every release
