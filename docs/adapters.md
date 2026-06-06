@@ -17,11 +17,11 @@ Adapters bridge that gap. They read the agent's native log format and normalize 
 
 ## Target adapters
 
-The following agents are on the roadmap. All are planned; none are implemented yet.
+The following agents are on the roadmap. The Generic JSONL adapter is available now; the rest are planned.
 
 | Adapter | Input source | Status |
 | ------- | ------------ | ------ |
-| **Generic JSONL** | Line-delimited JSON with tool calls | MVP available |
+| **Generic JSONL** | Line-delimited JSON with tool calls | [MVP available](generic-jsonl.md) |
 | **Claude Code** | Session export or hooks output | Planned |
 | **Codex** | Session log or export | Planned |
 | **Cursor** | Export or local log | Planned |
@@ -171,9 +171,9 @@ The `normalize` function is the core of each adapter: it maps one raw tool-call 
 
 ## Prioritization
 
-1. **Generic JSONL adapter** (first priority). A line-delimited JSON format that any agent framework or log exporter can emit. This gives immediate coverage for all agents without writing agent-specific parsers.
-2. **Claude Code / Codex session export** (second priority). These two agents have the largest user bases and produce structured output that maps cleanly to the trace schema.
-3. **Cursor / Aider** (third priority). Cursor's local logs and Aider's chat/edit history require more normalization work.
+1. **Generic JSONL adapter** (available). A line-delimited JSON format that any agent framework or log exporter can emit. This gives immediate coverage for all agents without writing agent-specific parsers.
+2. **Claude Code / Codex session export** (next priority). These two agents have large user bases and may produce structured output that maps well to the trace schema.
+3. **Cursor / Aider** (later priority). Cursor logs and Aider chat/edit history may require more normalization work.
 
 ## Limitations
 
@@ -186,7 +186,7 @@ The `normalize` function is the core of each adapter: it maps one raw tool-call 
 
 See [`CONTRIBUTING.md`](../CONTRIBUTING.md) for general contribution guidelines. Adapter contributions should include:
 
-- A parser module under a future `src/adapters/` directory (or equivalent)
+- A parser module under `bin/agentscope.js` or a future `src/adapters/` directory, depending on scope
 - A test that parses a real (anonymized) session export and produces a valid trace
 - Updated [`docs/adapters.md`](adapters.md) with the new adapter entry
 

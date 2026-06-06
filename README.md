@@ -146,7 +146,7 @@ The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in 
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
-For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), with adapters for Claude Code, Codex, Cursor, and Aider planned.
+For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), with adapters for Claude Code, Codex, Cursor, and Aider planned. See [`docs/generic-jsonl.md`](docs/generic-jsonl.md) for a step-by-step guide on formatting your own agent logs.
 
 ## GitHub Actions
 
@@ -179,7 +179,7 @@ Which agent adapter should AgentScope support first? Vote or leave context in [t
 - [x] Import external trace JSON files
 - [x] Publish the AgentScope trace schema
 - [x] CLI recorder for shell commands and test runs
-- [x] [Generic JSONL adapter](docs/adapters.md) for tool-call level traces
+- [x] [Generic JSONL adapter](docs/generic-jsonl.md) for tool-call level traces
 - [ ] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
