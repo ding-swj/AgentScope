@@ -1,6 +1,6 @@
 # Launch Copy
 
-Copy-pasteable text for announcing AgentScope. Replace `[REPO_URL]` and `[DEMO_URL]` with live links before posting.
+Copy-pasteable text for announcing AgentScope.
 
 ---
 
@@ -31,11 +31,11 @@ AgentScope makes AI coding agent runs observable.
 
 Instead of blind-reviewing agent PRs, you get an interactive timeline: files read, code changed, commands run, test failures, and final summaries.
 
-Live demo: [DEMO_URL]
-GitHub: [REPO_URL]
+Live demo: https://ding-swj.github.io/AgentScope/
+GitHub: https://github.com/ding-swj/AgentScope
 ```
 
-(244 characters including placeholder URLs)
+(244 characters including URLs)
 
 ---
 
@@ -65,8 +65,8 @@ What it does not do yet:
 
 It is open source under the MIT license. If you use AI coding agents regularly and wish you could see more than the final diff, I would appreciate feedback.
 
-Live demo: [DEMO_URL]
-GitHub: [REPO_URL]
+Live demo: https://ding-swj.github.io/AgentScope/
+GitHub: https://github.com/ding-swj/AgentScope
 
 ---
 
@@ -84,5 +84,6 @@ GitHub: [REPO_URL]
 
 技术栈是 React + Vite + TypeScript + Tailwind CSS，MIT 协议。如果你平时也用 Claude Code / Codex / Cursor / Aider，欢迎试试看，也欢迎提建议。
 
-Live demo: [DEMO_URL]
-GitHub: [REPO_URL]
+Live demo: https://ding-swj.github.io/AgentScope/
+GitHub: https://github.com/ding-swj/AgentScope
+
