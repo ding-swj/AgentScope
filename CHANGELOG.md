@@ -2,6 +2,22 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## [0.4.0] - 2026-06-06
+
+### Added
+
+- **Generic JSONL adapter.** `npm run agentscope -- import-jsonl <input.jsonl>` reads line-delimited JSON action logs and converts them to AgentScope trace files. Each line maps to one `TraceAction`.
+- **Example JSONL trace.** `examples/generic-agent.jsonl` contains a 7-action trace covering all 6 action types.
+- **Auto-generated run metadata.** The adapter infers `status`, `trustScore`, `filesChanged`, and `commands` from the action list when these fields are not explicitly provided.
+
+### Changed
+
+- **`docs/adapters.md`** now marks Generic JSONL as MVP available, with a Usage section, field table, and example.
+
+### Fixed
+
+- **Trace output avoids overwriting files generated in the same second.** `writeTrace` now appends a suffix (`-2`, `-3`, ...) when the target path already exists.
+
 ## [0.3.0] - 2026-06-06
 
 ### Added

@@ -26,8 +26,20 @@ Run through this list before tagging a GitHub release.
 - [x] Web UI opens and imports `examples/auth-fix.trace.json`
 - [x] `npm run lint` passes
 - [x] `npm run build` passes
-- [ ] Git tag created: `git tag v0.3.0`
-- [ ] GitHub Release published with `docs/release-notes/v0.3.0.md` content
+- [x] Git tag created: `git tag v0.3.0`
+- [x] GitHub Release published with `docs/release-notes/v0.3.0.md` content
+
+## v0.4.0 release
+
+- [x] `CHANGELOG.md` includes v0.4.0 entry
+- [x] `docs/release-notes/v0.4.0.md` written
+- [x] `README.md` links to v0.4.0 release notes
+- [x] Import JSONL smoke test: `npm run agentscope -- import-jsonl examples/generic-agent.jsonl`
+- [x] Validate generated trace: `npm run agentscope -- validate .agentscope/*.trace.json`
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [ ] Git tag created: `git tag v0.4.0`
+- [ ] GitHub Release published with `docs/release-notes/v0.4.0.md` content
 
 ## Every release
 

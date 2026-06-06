@@ -8,7 +8,7 @@
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.3.0.md) | [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.4.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
@@ -154,7 +154,7 @@ AgentScope can run inside CI to record traces, validate them, and upload them as
 
 ## Current Status
 
-AgentScope is in active development. The v0.3.0 release includes the Web UI, CLI recorder, trace validation, drag-and-drop import, and GitHub Actions integration.
+AgentScope is in active development. The v0.4.0 release adds the Generic JSONL adapter (`import-jsonl`) alongside the Web UI, CLI recorder, trace validation, drag-and-drop import, and GitHub Actions integration.
 
 ```bash
 # Record a trace
@@ -168,7 +168,7 @@ npm run dev
 # Then import the trace via the Import button or drag-and-drop
 ```
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.3.0.md`](docs/release-notes/v0.3.0.md) for the full v0.3.0 notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.4.0.md`](docs/release-notes/v0.4.0.md) for the latest release notes.
 
 ## Roadmap
 
