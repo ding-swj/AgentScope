@@ -14,7 +14,20 @@ Run through this list before tagging a GitHub release.
 - [x] `git init` completed and initial commit made
 - [ ] GitHub repo description set
 - [ ] GitHub topics set: `ai`, `coding-agent`, `trace-viewer`, `developer-tools`, `observability`, `react`, `typescript`
-- [ ] `private: true` removed from `package.json` (only if publishing the package to npm -- keep it for the repo)
+- [ ] `private: true` removed from `package.json` (only if publishing the package to npm; keep it for the repo)
+
+## v0.3.0 release
+
+- [x] `CHANGELOG.md` includes v0.3.0 entry
+- [x] `docs/release-notes/v0.3.0.md` written
+- [x] `README.md` links to changelog and release notes
+- [x] CLI recorder smoke test: `npm run agentscope -- record -- npm run lint`
+- [x] Trace validation smoke test: `npm run agentscope -- validate examples/auth-fix.trace.json`
+- [x] Web UI opens and imports `examples/auth-fix.trace.json`
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [ ] Git tag created: `git tag v0.3.0`
+- [ ] GitHub Release published with `docs/release-notes/v0.3.0.md` content
 
 ## Every release
 

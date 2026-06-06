@@ -133,6 +133,24 @@ For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
 AgentScope can run inside CI to record traces, validate them, and upload them as artifacts. See [`docs/github-actions.md`](docs/github-actions.md) for the setup guide and [`examples/github-actions/record-trace.yml`](examples/github-actions/record-trace.yml) for a copy-pasteable workflow.
 
+## Current Status
+
+AgentScope is in active development. The v0.3.0 release includes the Web UI, CLI recorder, trace validation, drag-and-drop import, and GitHub Actions integration.
+
+```bash
+# Record a trace
+npm run agentscope -- record -- npm test
+
+# Validate a trace
+npm run agentscope -- validate .agentscope/*.trace.json
+
+# View in the Web UI
+npm run dev
+# Then import the trace via the Import button or drag-and-drop
+```
+
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.3.0.md`](docs/release-notes/v0.3.0.md) for the full v0.3.0 notes.
+
 ## Roadmap
 
 - [x] Import external trace JSON files
