@@ -170,6 +170,10 @@ npm run dev
 
 See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.4.0.md`](docs/release-notes/v0.4.0.md) for the latest release notes.
 
+## Feedback
+
+Which agent adapter should AgentScope support first? Vote or leave context in [this feedback issue](https://github.com/ding-swj/AgentScope/issues/4).
+
 ## Roadmap
 
 - [x] Import external trace JSON files
