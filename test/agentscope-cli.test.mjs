@@ -320,6 +320,33 @@ test('summarize --dry-run renders trace quality warnings', () => {
   })
 })
 
+test('summarize reports an error when --input is missing', () => {
+  runCliFailure(['summarize'], {
+    assertError(error) {
+      assert.equal(error.status, 1)
+      assert.match(error.stderr, /Missing input file/)
+    },
+  })
+})
+
+test('summarize reports an error when --marker is empty', () => {
+  runCliFailure(['summarize', '--input', authTrace, '--marker', ''], {
+    assertError(error) {
+      assert.equal(error.status, 1)
+      assert.match(error.stderr, /marker value cannot be empty/)
+    },
+  })
+})
+
+test('record reports an error when no command is given', () => {
+  runCliFailure(['record'], {
+    assertError(error) {
+      assert.equal(error.status, 1)
+      assert.match(error.stderr, /Missing command/)
+    },
+  })
+})
+
 test('record captures a simple command', () => {
   withTempDir((dir) => {
     const output = runCli(['record', '--', 'echo', 'hello'], { cwd: dir })
@@ -386,6 +413,30 @@ test('import-jsonl reports invalid JSON with a line number', () => {
       assertError(error) {
         assert.equal(error.status, 1)
         assert.match(error.stderr, /Line 2: invalid JSON\./)
+      },
+    })
+  })
+})
+
+test('import-session reports an error when the input file is missing', () => {
+  runCliFailure(['import-session', join(root, 'missing-session.json')], {
+    assertError(error) {
+      assert.equal(error.status, 1)
+      assert.match(error.stderr, /failed to read or parse/)
+    },
+  })
+})
+
+test('import-session reports an error when the JSON is malformed', () => {
+  withTempDir((dir) => {
+    const fixture = join(dir, 'malformed-session.json')
+    writeFileSync(fixture, '{malformed}\n', 'utf8')
+
+    runCliFailure(['import-session', fixture], {
+      cwd: dir,
+      assertError(error) {
+        assert.equal(error.status, 1)
+        assert.match(error.stderr, /failed to read or parse/)
       },
     })
   })

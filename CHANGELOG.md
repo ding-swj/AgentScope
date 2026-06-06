@@ -2,6 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **CLI error-path coverage extended.** Tests now cover error paths for record, summarize, and import-session subcommands.
+
 ## [0.9.0] - 2026-06-06
 
 ### Added

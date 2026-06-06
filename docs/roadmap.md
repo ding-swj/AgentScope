@@ -43,16 +43,16 @@ Expected work:
 
 ### 3. Trace Quality Checks
 
-Status: planned ([#7](https://github.com/ding-swj/AgentScope/issues/7))
+Status: since v0.8.0 ([#7](https://github.com/ding-swj/AgentScope/issues/7))
 
 Validation currently checks structural correctness. The next layer should flag suspicious or incomplete traces.
 
 Expected work:
 
-- Warn when a run has edits but no verification command.
-- Warn when a run has failed tests but no later passed test.
-- Warn when high-risk edits have no evidence notes.
-- Surface quality warnings in CLI summary output.
+- [x] Warn when a run has edits but no verification command.
+- [x] Warn when a run has failed tests but no later passed test.
+- [x] Warn when high-risk edits have no evidence notes.
+- [x] Surface quality warnings in CLI summary output.
 
 ### 4. PR Comment Improvements
 
