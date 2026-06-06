@@ -7,6 +7,7 @@ All notable changes to AgentScope are documented in this file.
 ### Added
 
 - **Trace quality warnings.** `validate` and `summarize` now surface advisory warnings for edits without verification, failed tests without recovery, and high-risk edits without evidence notes.
+- **Compact review checklist.** `summarize` now renders a review checklist above the actions table so reviewers can assess a run at a glance.
 
 ## [0.7.0] - 2026-06-06
 

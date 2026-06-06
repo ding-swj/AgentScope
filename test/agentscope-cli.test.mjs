@@ -263,7 +263,45 @@ test('summarize --dry-run renders a Markdown summary', () => {
 
   assert.match(output, /## AgentScope Run Summary/)
   assert.match(output, /Fix failing auth token expiry tests/)
+  assert.match(output, /### Review Checklist/)
+  assert.match(output, /\| Code changes \| 4 file\(s\) edited \|/)
+  assert.match(output, /\| Verification \| 3 command\(s\) run \|/)
+  assert.match(output, /\| Failures recovered \| 1 failure\(s\) -> 1 passing test\(s\) \|/)
+  assert.match(output, /\| High-risk evidence \| All high-risk edits have evidence \|/)
   assert.match(output, /### Verification/)
+})
+
+test('summarize checklist reports edits without verification', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'checklist-no-verification.trace.json', [
+      {
+        type: 'edit_file',
+        title: 'Edit source',
+        file: 'src/example.ts',
+      },
+    ])
+    const output = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
+
+    assert.match(output, /\| Code changes \| 1 file\(s\) edited \|/)
+    assert.match(output, /\| Verification \| 0 command\(s\) run \|/)
+    assert.match(output, /\| Failures recovered \| No failures \|/)
+  })
+})
+
+test('summarize checklist reports failed tests without recovery', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'checklist-no-recovery.trace.json', [
+      {
+        type: 'test_failed',
+        title: 'Run failing tests',
+        command: 'npm test',
+      },
+    ])
+    const output = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
+
+    assert.match(output, /\| Verification \| 1 command\(s\) run \|/)
+    assert.match(output, /\| Failures recovered \| 1 failure\(s\) without recovery \|/)
+  })
 })
 
 test('summarize --dry-run renders trace quality warnings', () => {

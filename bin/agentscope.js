@@ -770,6 +770,46 @@ function renderVerification(actions) {
   return lines
 }
 
+function renderChecklist(run) {
+  const verificationActions = run.actions.filter((action) =>
+    action.type === 'run_command' || action.type === 'test_failed' || action.type === 'test_passed',
+  )
+  const failedTests = run.actions.filter((action) => action.type === 'test_failed')
+  const passedTests = run.actions.filter((action) => action.type === 'test_passed')
+  const hasRecoveredFailure = failedTests.some((failedAction) => {
+    const failedIndex = run.actions.indexOf(failedAction)
+    return run.actions.slice(failedIndex + 1).some((action) => action.type === 'test_passed')
+  })
+  const highRiskEditsWithoutEvidence = run.actions.filter((action) =>
+    action.type === 'edit_file' && action.risk === 'high' && action.details.length === 0,
+  )
+
+  const codeChanges = run.filesChanged === 0
+    ? 'No code changes'
+    : `${run.filesChanged} file(s) edited`
+  const verification = `${verificationActions.length} command(s) run`
+  const failuresRecovered = failedTests.length === 0
+    ? 'No failures'
+    : hasRecoveredFailure
+      ? `${failedTests.length} failure(s) -> ${passedTests.length} passing test(s)`
+      : `${failedTests.length} failure(s) without recovery`
+  const highRiskEvidence = highRiskEditsWithoutEvidence.length === 0
+    ? 'All high-risk edits have evidence'
+    : `${highRiskEditsWithoutEvidence.length} high-risk edit(s) without evidence`
+
+  return [
+    '### Review Checklist',
+    '',
+    '| Check | Status |',
+    '| --- | --- |',
+    `| Code changes | ${codeChanges} |`,
+    `| Verification | ${verification} |`,
+    `| Failures recovered | ${failuresRecovered} |`,
+    `| High-risk evidence | ${highRiskEvidence} |`,
+    '',
+  ]
+}
+
 function renderRunSummary(run, headingLevel = 2) {
   const heading = '#'.repeat(headingLevel)
   const lines = [
@@ -789,6 +829,8 @@ function renderRunSummary(run, headingLevel = 2) {
     `| Est. Cost | ${run.cost} |`,
     '',
   ]
+
+  lines.push(...renderChecklist(run))
 
   if (run.actions.length > 0) {
     const shownActions = run.actions.slice(0, maxSummaryActions)
