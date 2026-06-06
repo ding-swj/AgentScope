@@ -159,11 +159,21 @@ test('record captures a simple command', () => {
 
 test('record captures a failing command', () => {
   withTempDir((dir) => {
+    // Write a temp script to avoid inline -e quoting issues on Windows
+    const scriptPath = join(dir, 'failing-command.mjs')
+    writeFileSync(scriptPath, "console.error('boom');\nprocess.exit(7);\n", 'utf8')
+
+    // On Windows, record uses shell:true with a joined command string.
+    // If process.execPath contains spaces (e.g. "C:\\Program Files\\nodejs\\node.exe"),
+    // the inner shell needs it quoted.  On Unix, record spawns args directly — no quoting needed.
+    const quoteForShell = (s) =>
+      process.platform === 'win32' && s.includes(' ') ? `"${s}"` : s
+
     const result = spawnSync(process.execPath, [
       cli,
       'record', '--',
-      process.execPath, '-e',
-      "console.error('boom');process.exit(7)",
+      quoteForShell(process.execPath),
+      quoteForShell(scriptPath),
     ], {
       cwd: dir,
       encoding: 'utf8',
