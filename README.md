@@ -129,6 +129,9 @@ npm run agentscope -- record -- npm run build
 
 # Validate a trace file
 npm run agentscope -- validate .agentscope/example.trace.json
+
+# Import a JSONL action log
+npm run agentscope -- import-jsonl examples/generic-agent.jsonl
 ```
 
 The recorder captures:
@@ -143,7 +146,7 @@ The output is written to `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Open it in 
 
 For details, see [`docs/vision.md`](docs/vision.md#phase-2-real-data).
 
-For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md) -- adapters are planned for Claude Code, Codex, Cursor, and Aider.
+For framework-specific traces (file reads, code edits, test results captured at the agent tool-call level), see [`docs/adapters.md`](docs/adapters.md). The Generic JSONL adapter is available (`import-jsonl`), with adapters for Claude Code, Codex, Cursor, and Aider planned.
 
 ## GitHub Actions
 
@@ -172,10 +175,11 @@ See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/
 - [x] Import external trace JSON files
 - [x] Publish the AgentScope trace schema
 - [x] CLI recorder for shell commands and test runs
+- [x] [Generic JSONL adapter](docs/adapters.md) for tool-call level traces
 - [ ] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
-- [ ] [Adapters](docs/adapters.md) for Claude Code, Codex, Aider, Cursor, and more
+- [ ] [More adapters](docs/adapters.md) for Claude Code, Codex, Aider, Cursor
 
 ## Stack
 

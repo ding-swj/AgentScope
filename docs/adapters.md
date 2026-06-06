@@ -21,7 +21,7 @@ The following agents are on the roadmap. All are planned; none are implemented y
 
 | Adapter | Input source | Status |
 | ------- | ------------ | ------ |
-| **Generic JSONL** | Line-delimited JSON with tool calls | Planned |
+| **Generic JSONL** | Line-delimited JSON with tool calls | MVP available |
 | **Claude Code** | Session export or hooks output | Planned |
 | **Codex** | Session log or export | Planned |
 | **Cursor** | Export or local log | Planned |
@@ -44,6 +44,64 @@ Every adapter follows the same contract:
     - Optional: `file`, `command`, `output`, `diff`
 
 The adapter should fill as many fields as the source data allows. Missing optional fields default to `undefined` -- the Web UI handles them gracefully.
+
+## Generic JSONL adapter (MVP available)
+
+The first adapter shipped is a generic JSONL importer. It reads line-delimited JSON files where each line represents one agent action and converts them into a valid AgentScope trace.
+
+### Usage
+
+```bash
+npm run agentscope -- import-jsonl examples/generic-agent.jsonl
+```
+
+This produces `.agentscope/YYYY-MM-DD-HHmmss.trace.json`. Validate the output with:
+
+```bash
+npm run agentscope -- validate .agentscope/2026-06-06-140342.trace.json
+```
+
+Then import the trace into the Web UI via the Import button or drag-and-drop.
+
+### JSONL line format
+
+Each line is a JSON object with these fields:
+
+| Field | Required | Default | Notes |
+| ----- | -------- | ------- | ----- |
+| `type` | Yes | -- | One of: `read_file`, `edit_file`, `run_command`, `test_failed`, `test_passed`, `generate_summary` |
+| `title` | No | `"Untitled action"` | Short label for the timeline |
+| `timestamp` | No | Import time | Action start time (e.g. `"14:03:12"`) |
+| `duration` | No | `"0s"` | Action duration (e.g. `"18s"`, `"1m 12s"`) |
+| `risk` | No | `"low"` | One of: `low`, `medium`, `high` |
+| `summary` | No | `title` or `"Untitled action"` | One-to-two sentence description |
+| `details` | No | `[]` | Array of evidence strings |
+| `file` | No | -- | File path (for read_file / edit_file) |
+| `command` | No | -- | Shell command (for run_command / test actions) |
+| `output` | No | -- | Captured stdout / stderr |
+| `diff` | No | -- | Unified diff (for edit_file) |
+
+### Example
+
+See [`examples/generic-agent.jsonl`](../examples/generic-agent.jsonl) for a 7-action trace covering all 6 action types.
+
+```jsonl
+{"type":"read_file","title":"Read config","file":"src/config.ts","risk":"low","summary":"Inspected config file for the rate-limit setting."}
+{"type":"edit_file","title":"Bump rate limit","file":"src/config.ts","risk":"medium","summary":"Changed rate limit from 100 to 200.","details":["Default rate limit was too low for production traffic"]}
+{"type":"run_command","title":"Run tests","command":"npm test","risk":"low","summary":"All tests pass."}
+```
+
+### Auto-generated run metadata
+
+When converting JSONL to a trace, the adapter auto-generates run-level fields:
+
+- `run id`: `run-jsonl-<timestamp>` (e.g. `run-jsonl-2026-06-06-140342`)
+- `agent`: `"Generic JSONL"`
+- `branch`: detected from current git branch
+- `status`: inferred from action types (`failed` if any `test_failed`, otherwise `passed` if any `test_passed`, otherwise `warning`)
+- `trustScore`: 85 for passed, 60 for warning, 35 for failed
+- `filesChanged`: count of unique files in `edit_file` actions
+- `commands`: count of `run_command` / `test_failed` / `test_passed` actions
 
 ## Minimal adapter API sketch
 

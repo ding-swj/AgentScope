@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn, execFileSync } from 'node:child_process'
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { cwd, exit, argv, platform } from 'node:process'
 
@@ -12,11 +12,13 @@ function printHelp() {
 Usage:
   npm run agentscope -- record -- <command> [args...]
   npm run agentscope -- validate <trace-file>
+  npm run agentscope -- import-jsonl <input.jsonl>
 
 Examples:
   npm run agentscope -- record -- npm run lint
   npm run agentscope -- record -- npm run build
   npm run agentscope -- validate .agentscope/example.trace.json
+  npm run agentscope -- import-jsonl examples/generic-agent.jsonl
 `)
 }
 
@@ -239,7 +241,14 @@ function writeTrace(trace, startedAt) {
   const outDir = join(cwd(), '.agentscope')
   mkdirSync(outDir, { recursive: true })
 
-  const outPath = join(outDir, `${timestampForFile(startedAt)}.trace.json`)
+  const baseName = timestampForFile(startedAt)
+  let outPath = join(outDir, `${baseName}.trace.json`)
+  let suffix = 2
+  while (existsSync(outPath)) {
+    outPath = join(outDir, `${baseName}-${suffix}.trace.json`)
+    suffix += 1
+  }
+
   writeFileSync(outPath, `${JSON.stringify(trace, null, 2)}\n`, 'utf8')
   return outPath
 }
@@ -293,6 +302,117 @@ function record(commandArgs) {
   })
 }
 
+function importJsonl(jsonlPath) {
+  if (!jsonlPath) {
+    console.error('Missing input file. Use: npm run agentscope -- import-jsonl <input.jsonl>')
+    exit(1)
+  }
+
+  const startedAt = new Date()
+  const defaultTimestamp = timeOfDay(startedAt)
+  let raw
+  try {
+    raw = readFileSync(jsonlPath, 'utf8').replace(/^\uFEFF/, '')
+  } catch (error) {
+    console.error(`Failed to read "${jsonlPath}": ${error.message}`)
+    exit(1)
+  }
+
+  const lines = raw.split(/\r?\n/)
+  const actions = []
+
+  for (let i = 0; i < lines.length; i++) {
+    const lineNumber = i + 1
+    const trimmed = lines[i].trim()
+    if (trimmed.length === 0) continue
+
+    let entry
+    try {
+      entry = JSON.parse(trimmed)
+    } catch {
+      console.error(`Line ${lineNumber}: invalid JSON.`)
+      exit(1)
+    }
+
+    if (!isObject(entry)) {
+      console.error(`Line ${lineNumber}: expected a JSON object.`)
+      exit(1)
+    }
+
+    if (!isString(entry.type) || !validActionTypes.has(entry.type)) {
+      console.error(`Line ${lineNumber}: missing or invalid "type". Must be one of: ${[...validActionTypes].join(', ')}.`)
+      exit(1)
+    }
+
+    const title = isString(entry.title) && entry.title.length > 0 ? entry.title : 'Untitled action'
+
+    actions.push({
+      id: `a${actions.length + 1}`,
+      type: entry.type,
+      title,
+      timestamp: isString(entry.timestamp) && entry.timestamp.length > 0 ? entry.timestamp : defaultTimestamp,
+      duration: isString(entry.duration) && entry.duration.length > 0 ? entry.duration : '0s',
+      risk: isString(entry.risk) && validRisks.has(entry.risk) ? entry.risk : 'low',
+      summary: isString(entry.summary) && entry.summary.length > 0 ? entry.summary : title,
+      details: isStringArray(entry.details) ? entry.details : [],
+      file: isString(entry.file) ? entry.file : undefined,
+      command: isString(entry.command) ? entry.command : undefined,
+      output: isString(entry.output) ? entry.output : undefined,
+      diff: isString(entry.diff) ? entry.diff : undefined,
+    })
+  }
+
+  if (actions.length === 0) {
+    console.error('No valid actions found. The file is empty or contains only blank lines.')
+    exit(1)
+  }
+
+  // Infer run metadata
+  const hasFailed = actions.some(a => a.type === 'test_failed')
+  const hasPassed = actions.some(a => a.type === 'test_passed')
+  const status = hasFailed ? 'failed' : hasPassed ? 'passed' : 'warning'
+  const trustScore = status === 'passed' ? 85 : status === 'failed' ? 35 : 60
+
+  const uniqueFiles = new Set()
+  let commandCount = 0
+  for (const a of actions) {
+    if (a.type === 'edit_file' && a.file) uniqueFiles.add(a.file)
+    if (a.type === 'run_command' || a.type === 'test_failed' || a.type === 'test_passed') {
+      commandCount++
+    }
+  }
+
+  const fileName = jsonlPath.replace(/^.*[\\/]/, '')
+  const trace = {
+    schemaVersion: SCHEMA_VERSION,
+    runs: [
+      {
+        id: `run-jsonl-${timestampForFile(startedAt)}`,
+        title: `Import JSONL trace: ${fileName}`,
+        agent: 'Generic JSONL',
+        branch: getGitBranch(),
+        status,
+        trustScore,
+        startedAt: startedAt.toISOString(),
+        duration: '0s',
+        cost: '$0.00',
+        filesChanged: uniqueFiles.size,
+        commands: commandCount,
+        actions,
+      },
+    ],
+  }
+
+  const result = validateTraceObject(trace)
+  if (!result.ok) {
+    console.error(result.message)
+    exit(1)
+  }
+
+  const outPath = writeTrace(trace, startedAt)
+  console.log(`AgentScope trace written to ${outPath}`)
+}
+
 function validate(tracePath) {
   if (!tracePath) {
     console.error('Missing trace file. Use: npm run agentscope -- validate <trace-file>')
@@ -326,6 +446,11 @@ if (!subcommand || subcommand === '--help' || subcommand === '-h') {
 
 if (subcommand === 'validate') {
   validate(separator)
+  exit(0)
+}
+
+if (subcommand === 'import-jsonl') {
+  importJsonl(separator)
   exit(0)
 }
 
