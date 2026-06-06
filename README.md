@@ -50,6 +50,8 @@ Think of it as developer observability for AI coding agents.
 
 ## Features
 
+### Web UI
+
 - Interactive timeline for agent actions
 - Run list with trust score, status, branch, and duration
 - Action detail panel with summaries, timestamps, risk levels, and evidence notes
@@ -57,6 +59,21 @@ Think of it as developer observability for AI coding agents.
 - Dark-first developer tool UI
 - Drag-and-drop trace file import
 - Realistic mock trace data out of the box
+
+### CLI
+
+- `record` any shell command as a trace
+- `validate` trace files with structural and quality checks
+- `import-jsonl` generic line-delimited agent logs
+- `import-session` Claude/Codex-style session exports
+- `summarize` traces as Markdown for PR review
+- `summarize --dry-run` local PR summary preview
+- Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
+- 19 CLI smoke and error-path tests passing
+
+> **New in v0.8.0:** Trace quality warnings flag edits without
+> verification, failed tests without recovery, and high-risk
+> edits with no evidence. See [release notes](docs/release-notes/v0.8.0.md).
 
 ## Quick Start
 
