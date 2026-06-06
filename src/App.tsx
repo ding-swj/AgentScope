@@ -39,6 +39,7 @@ function App() {
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const dragCounter = useRef(0)
+  const replayTimerRef = useRef<number | null>(null)
 
   const activeRun = runs.find((run) => run.id === activeRunId) ?? runs[0]
   const [activeActionId, setActiveActionId] = useState(activeRun.actions[0]?.id ?? '')
@@ -51,6 +52,73 @@ function App() {
     const nextRun = runs.find((run) => run.id === runId)
     setActiveRunId(runId)
     setActiveActionId(nextRun?.actions[0]?.id ?? '')
+  }
+
+  const replayRun = () => {
+    if (!activeRun.actions.length) return
+
+    if (replayTimerRef.current) {
+      window.clearInterval(replayTimerRef.current)
+      replayTimerRef.current = null
+    }
+
+    let index = 0
+    setActiveActionId(activeRun.actions[index].id)
+
+    replayTimerRef.current = window.setInterval(() => {
+      index += 1
+      if (index >= activeRun.actions.length) {
+        if (replayTimerRef.current) {
+          window.clearInterval(replayTimerRef.current)
+          replayTimerRef.current = null
+        }
+        return
+      }
+      setActiveActionId(activeRun.actions[index].id)
+    }, 700)
+  }
+
+  const exportPrReport = () => {
+    const report = [
+      `# AgentScope PR Report: ${activeRun.title}`,
+      '',
+      `- Agent: ${activeRun.agent}`,
+      `- Branch: ${activeRun.branch}`,
+      `- Status: ${activeRun.status}`,
+      `- Trust score: ${activeRun.trustScore}%`,
+      `- Duration: ${activeRun.duration}`,
+      `- Commands: ${activeRun.commands}`,
+      `- Files changed: ${activeRun.filesChanged}`,
+      '',
+      '## Timeline',
+      '',
+      ...activeRun.actions.flatMap((action, index) => [
+        `${index + 1}. ${actionMeta[action.type].label}: ${action.title}`,
+        `   - Time: ${action.timestamp} / ${action.duration}`,
+        `   - Risk: ${action.risk}`,
+        `   - Summary: ${action.summary}`,
+        action.file ? `   - File: ${action.file}` : '',
+        action.command ? `   - Command: ${action.command}` : '',
+        '',
+      ].filter(Boolean)),
+      '## Verification',
+      '',
+      activeRun.actions
+        .filter((action) => action.type === 'test_failed' || action.type === 'test_passed' || action.type === 'run_command')
+        .map((action) => `- ${action.title}: ${action.command ?? action.summary}`)
+        .join('\n') || '- No verification commands recorded.',
+      '',
+    ].join('\n')
+
+    const blob = new Blob([report], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${activeRun.id}-pr-report.md`
+    document.body.append(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
   }
 
   // Shared file reader -- used by both the Import button and drag-and-drop.
@@ -226,7 +294,11 @@ function App() {
         <aside className="border-b border-white/10 bg-[#0a0d13] p-4 xl:border-b-0 xl:border-r">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Agent runs</span>
-            <button className="rounded border border-white/10 p-1.5 text-slate-300 hover:bg-white/5" title="Replay run">
+            <button
+              onClick={replayRun}
+              className="rounded border border-white/10 p-1.5 text-slate-300 hover:bg-white/5"
+              title="Replay run"
+            >
               <Play className="h-4 w-4" />
             </button>
           </div>
@@ -281,7 +353,10 @@ function App() {
                 </div>
                 <h2 className="text-xl font-semibold text-white">{activeRun.title}</h2>
               </div>
-              <button className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.08]">
+              <button
+                onClick={exportPrReport}
+                className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-200 hover:bg-white/[0.08]"
+              >
                 <GitPullRequest className="h-4 w-4" />
                 Export PR report
               </button>
