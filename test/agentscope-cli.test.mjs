@@ -23,8 +23,8 @@ function runCli(args, options = {}) {
   })
 }
 
-function runCliFailure(args, options = {}) {
-  const result = spawnSync(process.execPath, [cli, ...args], {
+function runCliResult(args, options = {}) {
+  return spawnSync(process.execPath, [cli, ...args], {
     cwd: options.cwd ?? root,
     encoding: 'utf8',
     env: {
@@ -32,6 +32,10 @@ function runCliFailure(args, options = {}) {
       ...options.env,
     },
   })
+}
+
+function runCliFailure(args, options = {}) {
+  const result = runCliResult(args, options)
 
   assert.notEqual(result.status, 0, `expected command to fail: ${args.join(' ')}`)
   options.assertError?.({
@@ -54,6 +58,42 @@ function parseWrittenTrace(output) {
   const match = output.match(/AgentScope trace written to (.+)\r?\n?$/)
   assert.ok(match, `expected trace output path in:\n${output}`)
   return JSON.parse(readFileSync(match[1], 'utf8'))
+}
+
+function writeTraceFixture(dir, name, actions) {
+  const tracePath = join(dir, name)
+  const trace = {
+    schemaVersion: '1.0.0',
+    runs: [
+      {
+        id: 'run-test',
+        title: 'Test run',
+        agent: 'AgentScope Test',
+        branch: 'test',
+        status: 'warning',
+        trustScore: 60,
+        startedAt: '2026-06-06T00:00:00.000Z',
+        duration: '1m',
+        cost: '$0.00',
+        filesChanged: actions.filter((action) => action.type === 'edit_file').length,
+        commands: actions.filter((action) =>
+          action.type === 'run_command' || action.type === 'test_failed' || action.type === 'test_passed',
+        ).length,
+        actions: actions.map((action, index) => ({
+          id: `a${index + 1}`,
+          timestamp: '00:00:00',
+          duration: '1s',
+          risk: 'low',
+          summary: action.title,
+          details: [],
+          ...action,
+        })),
+      },
+    ],
+  }
+
+  writeFileSync(tracePath, `${JSON.stringify(trace, null, 2)}\n`, 'utf8')
+  return tracePath
 }
 
 test('import-jsonl creates a valid trace from the generic fixture', () => {
@@ -94,6 +134,70 @@ test('import-session maps Claude/Codex-style tool calls into trace actions', () 
 test('validate accepts the example trace', () => {
   const output = runCli(['validate', authTrace])
   assert.match(output, /Valid AgentScope trace:/)
+})
+
+test('validate does not warn on the example trace', () => {
+  const result = runCliResult(['validate', authTrace])
+
+  assert.equal(result.status, 0)
+  assert.match(result.stdout, /Valid AgentScope trace:/)
+  assert.equal(result.stderr, '')
+})
+
+test('quality check warns on edits without verification', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'edits-no-verification.trace.json', [
+      {
+        type: 'edit_file',
+        title: 'Edit source',
+        file: 'src/example.ts',
+      },
+    ])
+    const result = runCliResult(['validate', fixture], { cwd: dir })
+
+    assert.equal(result.status, 0)
+    assert.match(result.stdout, /Valid AgentScope trace:/)
+    assert.match(result.stderr, /Warning: Run \[0\]: Run has 1 edit\(s\) but no verification command was run\./)
+  })
+})
+
+test('quality check warns on failed tests without recovery', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'failed-no-recovery.trace.json', [
+      {
+        type: 'test_failed',
+        title: 'Run failing tests',
+        command: 'npm test',
+      },
+    ])
+    const result = runCliResult(['validate', fixture], { cwd: dir })
+
+    assert.equal(result.status, 0)
+    assert.match(result.stderr, /Warning: Run \[0\]: Run has failed test\(s\) with no later passing test\./)
+  })
+})
+
+test('quality check warns on high-risk edits without evidence', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'high-risk-no-evidence.trace.json', [
+      {
+        type: 'edit_file',
+        title: 'Edit auth logic',
+        file: 'src/auth.ts',
+        risk: 'high',
+        details: [],
+      },
+      {
+        type: 'test_passed',
+        title: 'Run tests',
+        command: 'npm test',
+      },
+    ])
+    const result = runCliResult(['validate', fixture], { cwd: dir })
+
+    assert.equal(result.status, 0)
+    assert.match(result.stderr, /Warning: Run \[0\]: Run has high-risk edit\(s\) with no evidence notes\./)
+  })
 })
 
 test('validate reports an error for a missing file', () => {
@@ -143,6 +247,22 @@ test('summarize --dry-run renders a Markdown summary', () => {
   assert.match(output, /### Verification/)
 })
 
+test('summarize --dry-run renders trace quality warnings', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'summary-warning.trace.json', [
+      {
+        type: 'edit_file',
+        title: 'Edit source',
+        file: 'src/example.ts',
+      },
+    ])
+    const output = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
+
+    assert.match(output, /### Trace Quality Warnings/)
+    assert.match(output, /Run has 1 edit\(s\) but no verification command was run\./)
+  })
+})
+
 test('record captures a simple command', () => {
   withTempDir((dir) => {
     const output = runCli(['record', '--', 'echo', 'hello'], { cwd: dir })
@@ -165,7 +285,7 @@ test('record captures a failing command', () => {
 
     // On Windows, record uses shell:true with a joined command string.
     // If process.execPath contains spaces (e.g. "C:\\Program Files\\nodejs\\node.exe"),
-    // the inner shell needs it quoted.  On Unix, record spawns args directly — no quoting needed.
+    // the inner shell needs it quoted. On Unix, record spawns args directly.
     const quoteForShell = (s) =>
       process.platform === 'win32' && s.includes(' ') ? `"${s}"` : s
 

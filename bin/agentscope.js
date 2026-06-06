@@ -169,29 +169,63 @@ function validateRun(run, runIndex) {
   return null
 }
 
+function collectRunQualityWarnings(run, runIndex) {
+  const prefix = `Run [${runIndex}]`
+  const warnings = []
+  const actions = run.actions
+
+  const edits = actions.filter((action) => action.type === 'edit_file')
+  const verificationActions = actions.filter((action) =>
+    action.type === 'run_command' || action.type === 'test_failed' || action.type === 'test_passed',
+  )
+
+  if (edits.length > 0 && verificationActions.length === 0) {
+    warnings.push(`${prefix}: Run has ${edits.length} edit(s) but no verification command was run.`)
+  }
+
+  const firstFailedTestIndex = actions.findIndex((action) => action.type === 'test_failed')
+  if (
+    firstFailedTestIndex !== -1 &&
+    !actions.slice(firstFailedTestIndex + 1).some((action) => action.type === 'test_passed')
+  ) {
+    warnings.push(`${prefix}: Run has failed test(s) with no later passing test.`)
+  }
+
+  const highRiskEditsWithoutEvidence = edits.filter((action) =>
+    action.risk === 'high' && action.details.length === 0,
+  )
+  if (highRiskEditsWithoutEvidence.length > 0) {
+    warnings.push(`${prefix}: Run has high-risk edit(s) with no evidence notes.`)
+  }
+
+  return warnings
+}
+
 function validateTraceObject(raw) {
   if (!isObject(raw)) {
-    return { ok: false, message: 'Invalid trace: expected a JSON object at the top level.' }
+    return { ok: false, message: 'Invalid trace: expected a JSON object at the top level.', warnings: [] }
   }
 
   if (raw.schemaVersion !== SCHEMA_VERSION) {
-    return { ok: false, message: `Invalid trace: expected schemaVersion "${SCHEMA_VERSION}".` }
+    return { ok: false, message: `Invalid trace: expected schemaVersion "${SCHEMA_VERSION}".`, warnings: [] }
   }
 
   if (!Array.isArray(raw.runs)) {
-    return { ok: false, message: 'Invalid trace: missing "runs" array.' }
+    return { ok: false, message: 'Invalid trace: missing "runs" array.', warnings: [] }
   }
 
   if (raw.runs.length === 0) {
-    return { ok: false, message: 'Invalid trace: the "runs" array is empty.' }
+    return { ok: false, message: 'Invalid trace: the "runs" array is empty.', warnings: [] }
   }
 
+  const warnings = []
   for (let runIndex = 0; runIndex < raw.runs.length; runIndex += 1) {
     const error = validateRun(raw.runs[runIndex], runIndex)
-    if (error) return { ok: false, message: error }
+    if (error) return { ok: false, message: error, warnings: [] }
+    warnings.push(...collectRunQualityWarnings(raw.runs[runIndex], runIndex))
   }
 
-  return { ok: true }
+  return { ok: true, warnings }
 }
 
 function buildTrace({ commandText, startedAt, duration, exitCode, stdout, stderr }) {
@@ -778,8 +812,12 @@ function renderRunSummary(run, headingLevel = 2) {
 }
 
 function generateTraceSummary(trace) {
+  const result = validateTraceObject(trace)
+  const warnings = result.ok ? result.warnings : []
+  const warningLines = renderQualityWarnings(warnings)
+
   if (trace.runs.length === 1) {
-    return renderRunSummary(trace.runs[0])
+    return [renderRunSummary(trace.runs[0]), ...warningLines].join('\n').trimEnd()
   }
 
   const lines = [
@@ -800,7 +838,20 @@ function generateTraceSummary(trace) {
     lines.push('---', '', renderRunSummary(run, 3), '')
   }
 
+  lines.push(...warningLines)
   return lines.join('\n').trimEnd()
+}
+
+function renderQualityWarnings(warnings) {
+  if (warnings.length === 0) return []
+
+  return [
+    '',
+    '### Trace Quality Warnings',
+    '',
+    ...warnings.map((warning) => `- ${warning}`),
+    '',
+  ]
 }
 
 function parseSummarizeOptions(args) {
@@ -974,6 +1025,9 @@ function validate(tracePath) {
   }
 
   console.log(`Valid AgentScope trace: ${tracePath}`)
+  for (const warning of result.warnings) {
+    console.error(`Warning: ${warning}`)
+  }
 }
 
 const [, , subcommand, separator, ...rest] = argv

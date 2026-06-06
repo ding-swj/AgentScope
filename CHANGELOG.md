@@ -2,6 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **Trace quality warnings.** `validate` and `summarize` now surface advisory warnings for edits without verification, failed tests without recovery, and high-risk edits without evidence notes.
+
 ## [0.7.0] - 2026-06-06
 
 ### Added
