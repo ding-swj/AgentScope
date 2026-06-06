@@ -1,10 +1,10 @@
 # AgentScope
 
-Visual trace viewer for AI coding agents.
+Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/)
+[Live demo](https://ding-swj.github.io/AgentScope/) · [Release notes](docs/release-notes/v0.3.0.md) · [Trace schema](docs/trace-schema.json)
 
-AgentScope helps developers inspect what an AI coding agent read, changed, ran, failed, fixed, and summarized during a coding task.
+AgentScope helps developers understand what an AI coding agent read, changed, ran, failed, fixed, and verified before trusting its output.
 
 AI coding agents are powerful, but their behavior is still hard to audit. AgentScope turns each agent run into an interactive timeline so you can understand how a result was produced before you trust it.
 
