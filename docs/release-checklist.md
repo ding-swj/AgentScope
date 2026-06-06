@@ -97,7 +97,7 @@ Run through this list before tagging a GitHub release.
 - [x] `npm test` (19 pass, 0 fail)
 - [x] `npm run lint` passes
 - [x] `npm run build` passes
-- [ ] Git tag created: `git tag v0.8.0`
+- [x] Git tag created: `git tag v0.8.0`
 - [ ] GitHub Release published with `docs/release-notes/v0.8.0.md` content
 
 ## Every release
