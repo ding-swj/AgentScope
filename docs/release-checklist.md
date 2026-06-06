@@ -70,6 +70,20 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: `git tag v0.6.0`
 - [x] GitHub Release published with `docs/release-notes/v0.6.0.md` content
 
+## v0.7.0 release
+
+- [x] `CHANGELOG.md` includes v0.7.0 entry
+- [x] `docs/release-notes/v0.7.0.md` written
+- [x] `README.md` links to v0.7.0 release notes
+- [x] `npm test` covers CLI smoke and error paths
+- [x] `record` validates generated traces before writing
+- [x] `record` success and failure command tests pass
+- [x] `validate` error-path tests pass
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [ ] Git tag created: `git tag v0.7.0`
+- [ ] GitHub Release published with `docs/release-notes/v0.7.0.md` content
+
 ## Every release
 
 - [ ] `npm run lint` passes
