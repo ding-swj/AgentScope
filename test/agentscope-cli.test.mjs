@@ -104,6 +104,20 @@ test('summarize --dry-run renders a Markdown summary', () => {
   assert.match(output, /### Verification/)
 })
 
+test('record captures a simple command', () => {
+  withTempDir((dir) => {
+    const output = runCli(['record', '--', 'echo', 'hello'], { cwd: dir })
+    const trace = parseWrittenTrace(output)
+
+    assert.equal(trace.schemaVersion, '1.0.0')
+    assert.equal(trace.runs.length, 1)
+    assert.equal(trace.runs[0].status, 'passed')
+    assert.equal(trace.runs[0].commands, 1)
+    assert.equal(trace.runs[0].actions[0].type, 'test_passed')
+    assert.match(trace.runs[0].actions[0].output, /hello/)
+  })
+})
+
 test('import-jsonl reports invalid JSON with a line number', () => {
   withTempDir((dir) => {
     const fixture = join(dir, 'bad.jsonl')

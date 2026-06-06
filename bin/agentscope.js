@@ -299,6 +299,10 @@ function record(commandArgs) {
       stdout,
       stderr,
     })
+    const result = validateTraceObject(trace)
+    if (!result.ok) {
+      console.error(`Recorded trace failed validation: ${result.message}`)
+    }
     const outPath = writeTrace(trace, startedAt)
 
     console.log(`\nAgentScope trace written to ${outPath}`)
