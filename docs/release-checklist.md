@@ -100,6 +100,22 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: `git tag v0.8.0`
 - [x] GitHub Release published with `docs/release-notes/v0.8.0.md` content
 
+## v0.9.0 release
+
+- [x] CHANGELOG.md includes v0.9.0 entry
+- [x] docs/release-notes/v0.9.0.md written
+- [x] README.md links to v0.9.0 release notes
+- [x] summarize renders Review Checklist table above actions table
+- [x] Checklist covers Code changes, Verification, Failures recovered, High-risk evidence
+- [x] auth-fix trace checklist passes all 4 checks
+- [x] Edits-without-verification checklist test passes
+- [x] Failed-tests-without-recovery checklist test passes
+- [x] npm test (21 pass, 0 fail)
+- [x] npm run lint passes
+- [x] npm run build passes
+- [ ] Git tag created: git tag v0.9.0
+- [ ] GitHub Release published with docs/release-notes/v0.9.0.md content
+
 ## Every release
 
 - [ ] `npm run lint` passes

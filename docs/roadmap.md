@@ -56,13 +56,13 @@ Expected work:
 
 ### 4. PR Comment Improvements
 
-Status: planned ([#8](https://github.com/ding-swj/AgentScope/issues/8))
+Status: since v0.9.0 ([#8](https://github.com/ding-swj/AgentScope/issues/8))
 
 The current PR comment summary is useful, but still basic.
 
 Expected work:
 
-- Add a compact quality checklist.
+- [x] Add a compact quality checklist.
 - Link uploaded trace artifacts when available.
 - Show omitted action counts more clearly.
 - Keep comments short enough for repeated PR review.
