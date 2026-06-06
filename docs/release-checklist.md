@@ -56,6 +56,20 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: `git tag v0.5.0`
 - [x] GitHub Release published with `docs/release-notes/v0.5.0.md` content
 
+## v0.6.0 release
+
+- [x] `CHANGELOG.md` includes v0.6.0 entry
+- [x] `docs/release-notes/v0.6.0.md` written
+- [x] `README.md` links to v0.6.0 release notes
+- [x] Session JSON guide written: `docs/session-json.md`
+- [x] Example session added: `examples/agent-session.json`
+- [x] Session import smoke test: `npm run agentscope -- import-session examples/agent-session.json`
+- [x] Validate generated trace: `npm run agentscope -- validate .agentscope/*.trace.json`
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [ ] Git tag created: `git tag v0.6.0`
+- [ ] GitHub Release published with `docs/release-notes/v0.6.0.md` content
+
 ## Every release
 
 - [ ] `npm run lint` passes
