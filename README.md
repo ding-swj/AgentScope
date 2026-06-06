@@ -8,7 +8,7 @@
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.4.0.md) | [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.5.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
@@ -184,7 +184,7 @@ AgentScope can run inside CI to record traces, validate them, and upload them as
 
 ## Current Status
 
-AgentScope is in active development. The v0.4.0 release adds the Generic JSONL adapter (`import-jsonl`) alongside the Web UI, CLI recorder, trace validation, drag-and-drop import, and GitHub Actions integration.
+AgentScope is in active development. The v0.5.0 release adds GitHub PR summary comments (`summarize`) alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, drag-and-drop import, and GitHub Actions integration.
 
 ```bash
 # Record a trace
@@ -193,12 +193,15 @@ npm run agentscope -- record -- npm test
 # Validate a trace
 npm run agentscope -- validate .agentscope/*.trace.json
 
+# Generate a PR-ready Markdown summary
+npm run agentscope -- summarize --input .agentscope/*.trace.json --dry-run
+
 # View in the Web UI
 npm run dev
 # Then import the trace via the Import button or drag-and-drop
 ```
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.4.0.md`](docs/release-notes/v0.4.0.md) for the latest release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.5.0.md`](docs/release-notes/v0.5.0.md) for the latest release notes.
 
 ## Feedback
 
@@ -210,7 +213,7 @@ Which agent adapter should AgentScope support first? Vote or leave context in [t
 - [x] Publish the AgentScope trace schema
 - [x] CLI recorder for shell commands and test runs
 - [x] [Generic JSONL adapter](docs/generic-jsonl.md) for tool-call level traces
-- [ ] GitHub Action integration for PR trace reports
+- [x] GitHub Action integration for PR trace reports
 - [ ] Execution graph for file reads, edits, and verification steps
 - [ ] VS Code extension
 - [ ] [More adapters](docs/adapters.md) for Claude Code, Codex, Aider, Cursor

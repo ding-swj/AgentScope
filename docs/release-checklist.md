@@ -39,7 +39,22 @@ Run through this list before tagging a GitHub release.
 - [x] `npm run lint` passes
 - [x] `npm run build` passes
 - [x] Git tag created: `git tag v0.4.0`
-- [ ] GitHub Release published with `docs/release-notes/v0.4.0.md` content
+- [x] GitHub Release published with `docs/release-notes/v0.4.0.md` content
+
+## v0.5.0 release
+
+- [x] `CHANGELOG.md` includes v0.5.0 entry
+- [x] `docs/release-notes/v0.5.0.md` written
+- [x] `README.md` links to v0.5.0 release notes
+- [x] GitHub Actions guide documents PR summary comments
+- [x] GitHub Actions example workflow posts PR summary comments
+- [x] Summary dry-run smoke test: `npm run agentscope -- summarize --input examples/auth-fix.trace.json --dry-run`
+- [x] Non-dry-run environment validation tested outside GitHub Actions
+- [x] Mocked GitHub comment create/update paths tested
+- [x] `npm run lint` passes
+- [x] `npm run build` passes
+- [ ] Git tag created: `git tag v0.5.0`
+- [ ] GitHub Release published with `docs/release-notes/v0.5.0.md` content
 
 ## Every release
 

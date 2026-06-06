@@ -2,6 +2,19 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## [0.5.0] - 2026-06-06
+
+### Added
+
+- **PR summary comments.** `npm run agentscope -- summarize --input <trace.json>` can create or update an AgentScope Markdown summary comment on pull requests when run in GitHub Actions.
+- **Dry-run summary rendering.** `npm run agentscope -- summarize --input <trace.json> --dry-run` renders the same Markdown locally without calling GitHub.
+- **Duplicate comment prevention.** PR comments include the hidden `<!-- agentscope-summary -->` marker so repeated workflow runs update the existing AgentScope comment instead of creating duplicates.
+
+### Changed
+
+- **GitHub Actions workflow guide and example** now show the full flow: record a trace, validate it, post a PR summary comment, upload the trace artifact, and preserve the recorded command status.
+- **README** now documents the PR comment workflow and marks GitHub Action PR trace reports as available.
+
 ## [0.4.0] - 2026-06-06
 
 ### Added
