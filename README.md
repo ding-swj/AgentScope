@@ -8,7 +8,7 @@
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.7.0.md) | [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.8.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
@@ -194,7 +194,7 @@ AgentScope can run inside CI to record traces, validate them, and upload them as
 
 ## Current Status
 
-AgentScope is in active development. The v0.7.0 release improves CLI reliability with smoke tests, error-path coverage, recorder validation checks, and successful/failing command coverage alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, Session JSON adapter, PR summary comments, drag-and-drop import, and GitHub Actions integration.
+AgentScope is in active development. The v0.8.0 release adds trace quality warnings that flag edits without verification, failed tests without recovery, and high-risk edits with no evidence, alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, Session JSON adapter, PR summary comments, drag-and-drop import, CLI test suite, and GitHub Actions integration.
 
 ```bash
 # Record a trace
@@ -214,7 +214,7 @@ npm run dev
 # Then import the trace via the Import button or drag-and-drop
 ```
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.7.0.md`](docs/release-notes/v0.7.0.md) for the latest release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.8.0.md`](docs/release-notes/v0.8.0.md) for the latest release notes.
 
 ## Feedback
 
