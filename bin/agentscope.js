@@ -5,11 +5,13 @@ import { join } from 'node:path'
 import { cwd, exit, argv, platform } from 'node:process'
 
 const SCHEMA_VERSION = '1.0.0'
+const CLI_VERSION = '0.10.0'
 
 function printHelp() {
   console.log(`AgentScope CLI
 
 Usage:
+  npm run agentscope -- --version
   npm run agentscope -- record -- <command> [args...]
   npm run agentscope -- validate <trace-file>
   npm run agentscope -- import-jsonl <input.jsonl>
@@ -1074,9 +1076,15 @@ function validate(tracePath) {
 }
 
 const [, , subcommand, separator, ...rest] = argv
+const args = argv.slice(2)
 
 if (!subcommand || subcommand === '--help' || subcommand === '-h') {
   printHelp()
+  exit(0)
+}
+
+if (args.includes('--version') || args.includes('-V')) {
+  console.log(`AgentScope CLI v${CLI_VERSION}`)
   exit(0)
 }
 

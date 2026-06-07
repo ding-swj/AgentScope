@@ -2,6 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **CLI --version flag.** `npm run agentscope -- --version` prints the CLI version and exits.
+
 ## [0.10.0] - 2026-06-07
 
 ### Added

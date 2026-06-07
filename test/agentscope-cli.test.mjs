@@ -131,6 +131,12 @@ test('import-session maps Claude/Codex-style tool calls into trace actions', () 
   })
 })
 
+test('--version prints the version and exits 0', () => {
+  const output = runCli(['--version'])
+
+  assert.match(output, /AgentScope CLI v\d+\.\d+\.\d+/)
+})
+
 test('validate accepts the example trace', () => {
   const output = runCli(['validate', authTrace])
   assert.match(output, /Valid AgentScope trace:/)
