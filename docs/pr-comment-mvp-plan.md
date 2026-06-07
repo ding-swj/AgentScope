@@ -1,5 +1,8 @@
 # GitHub PR Comment MVP Plan
 
+> Status: archived — all phases implemented (v0.5.0 → v0.13.0)
+>
+
 This document tracks the plan for turning AgentScope trace files into GitHub PR summary comments.
 
 ## Phase 1: Dry-Run Summary

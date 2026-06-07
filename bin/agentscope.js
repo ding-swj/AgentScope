@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { cwd, exit, argv, platform } from 'node:process'
 
 const SCHEMA_VERSION = '1.0.0'
-const CLI_VERSION = '0.11.0'
+const CLI_VERSION = '0.13.0'
 
 function printHelp() {
   console.log(`AgentScope CLI

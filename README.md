@@ -69,7 +69,7 @@ Think of it as developer observability for AI coding agents.
 - `summarize` traces as Markdown for PR review
 - `summarize --dry-run` local PR summary preview
 - Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
-- 27 CLI smoke and error-path tests passing
+- 30 CLI smoke and error-path tests passing
 
 > **New in v0.13.0:** PR summaries now show omitted action
 > counts by type, and `summarize --compact` keeps verification

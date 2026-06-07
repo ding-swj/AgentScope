@@ -2,6 +2,18 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- CLI --version now reports v0.13.0
+- README test count corrected from 27 to 30
+
+### Changed
+
+- docs/pr-comment-mvp-plan.md archived
+- docs/launch-copy.md refreshed to v0.13.0
+
 ## [0.13.0] - 2026-06-07
 
 ### Changed

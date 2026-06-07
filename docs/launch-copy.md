@@ -7,20 +7,16 @@ Copy-pasteable text for announcing AgentScope.
 ## 1. One-line pitch
 
 ```text
-AgentScope: a visual trace viewer that shows you what your AI coding agent read, changed, ran, failed, and fixed.
+AgentScope: a visual trace viewer that shows what your AI coding agent read, changed, ran, failed, fixed, and verified.
 ```
-
-(112 characters)
 
 ---
 
 ## 2. GitHub repo short description
 
 ```text
-Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
+Visual trace viewer for AI coding agents. Record, validate, inspect, and summarize agent runs locally or in CI.
 ```
-
-(99 characters)
 
 ---
 
@@ -29,13 +25,13 @@ Visual trace viewer for AI coding agents. Record, validate, and inspect agent ru
 ```text
 AgentScope makes AI coding agent runs observable.
 
-Instead of blind-reviewing agent PRs, you get an interactive timeline: files read, code changed, commands run, test failures, and final summaries.
+Instead of blind-reviewing agent PRs, you get a trace: files read, code changed, commands run, failures, recovery, and a PR-ready summary.
+
+v0.13.0 adds compact PR summaries and clearer omitted-action counts.
 
 Live demo: https://ding-swj.github.io/AgentScope/
 GitHub: https://github.com/ding-swj/AgentScope
 ```
-
-(244 characters including URLs)
 
 ---
 
@@ -47,28 +43,30 @@ GitHub: https://github.com/ding-swj/AgentScope
 
 AI coding agents are getting good enough to ship real PRs. But the review experience still often comes down to looking at the final diff and deciding whether to trust it. You do not get much visibility into what the agent actually did along the way.
 
-I built AgentScope to make those runs easier to inspect. It is a browser-based trace viewer that shows agent actions in chronological order: file reads, code edits, command runs, test passes/failures, and final summaries.
+I built AgentScope to make those runs easier to inspect. It is an open-source trace viewer and CLI workflow for AI coding agents.
 
-What it does today (v0.7.0):
+What it does today (v0.13.0):
 
-- Web UI: interactive timeline with trust score, run list, action detail panel, and diff/output viewer
-- CLI recorder: `npm run agentscope -- record -- npm test` wraps a shell command and produces a trace file
-- Trace validation: checks required fields, enums, and basic value ranges
-- Generic JSONL adapter: import line-delimited agent action logs
-- Session JSON adapter: import Claude/Codex-style session exports
-- PR summary comments: `summarize --dry-run` for local preview, or post live comments in GitHub Actions
-- GitHub Actions workflow: record, validate, summarize, and comment on PRs in CI
-- CLI test suite: 13 tests covering import, validate, summarize, and record with happy and error paths
-- Drag-and-drop trace import in the browser
+- Web UI: interactive timeline, run list, trust score, action details, diffs, and command output
+- CLI recorder: `record` wraps any shell command and writes an AgentScope trace
+- Trace validation: `validate` checks structure plus quality warnings
+- Generic JSONL adapter: `import-jsonl` converts line-delimited agent logs
+- Session adapter: `import-session` imports common Claude/Codex-style session exports
+- PR summaries: `summarize --dry-run` previews Markdown locally, and GitHub Actions can post or update live PR comments
+- Review checklist: each PR summary shows code changes, verification, failure recovery, and high-risk evidence
+- Quality warnings: flags edits without verification, failures without recovery, and high-risk edits without evidence
+- Compact mode: `summarize --compact` keeps verification output to one line per command
+- CLI version: `--version` / `-V` prints the AgentScope CLI version for bug reports
+- Test coverage: 30 CLI smoke and error-path tests pass
 
-What it does not do yet:
+Current limitations:
 
-- Native Claude Code and Codex adapters are still planned (the Session JSON adapter is a permissive bridge)
-- No VS Code extension yet
-- No execution graph view for read/edit/verify relationships
-- The Web UI still shows mock data by default; real traces are imported via the Import button or drag-and-drop
+- Native Claude Code and Codex adapters are still planned; the Session JSON adapter is a permissive bridge
+- VS Code extension is planned
+- Execution graph view is planned
+- The Web UI shows mock data by default; real traces are imported via the Import button or drag-and-drop
 
-It is open source under the MIT license. If you use AI coding agents regularly and wish you could see more than the final diff, I would appreciate feedback.
+It is MIT licensed. If you use AI coding agents regularly and wish you could see more than the final diff, I would appreciate feedback.
 
 Live demo: https://ding-swj.github.io/AgentScope/
 GitHub: https://github.com/ding-swj/AgentScope
@@ -81,16 +79,32 @@ GitHub: https://github.com/ding-swj/AgentScope
 
 **Body:**
 
-最近我用 AI coding agent 写代码越来越多，但 review 的时候一直有个问题：最后通常只能看到 diff，不知道中间发生了什么。它读了哪些文件、跑了哪些命令、在哪里失败、又是怎么修回来的，这些过程通常都不透明。
+最近我用 AI coding agent 写代码越来越多，但 review 的时候一直有个问题：最后通常只能看到 diff，不知道中间发生了什么。它读了哪些文件，跑了哪些命令，在哪里失败，又是怎么修回来的，这些过程通常不透明。
 
 所以我做了 AgentScope，一个开源的可视化 trace viewer，把 agent run 变成可以查看和回放的时间线。
 
-目前 v0.7.0 支持 Web UI、CLI recorder、trace validation、Generic JSONL adapter、Session JSON adapter（可导入 Claude/Codex 风格的 session 导出）、PR summary comment（dry-run 本地预览或 GitHub Actions 自动评论）、CLI 测试套件（13 个测试覆盖 happy path 和 error path），以及浏览器拖拽导入 trace 文件。
+目前 v0.13.0 支持：
 
-限制：native Claude Code / Codex adapter 还在计划中（Session JSON adapter 是一个容错性较强的桥接层）；VS Code 扩展还没做；执行图（execution graph）还没做；Web UI 默认展示 mock 数据，真实 trace 通过 Import 按钮或拖拽导入。
+- Web UI：时间线、run list、trust score、action detail、diff 和 command output
+- CLI recorder：`record` 可以把任意 shell command 包成 trace
+- Trace validation：`validate` 做结构校验和质量提示
+- Generic JSONL adapter：`import-jsonl` 导入通用逐行 JSON agent log
+- Session adapter：`import-session` 导入常见 Claude/Codex 风格 session export
+- PR summary：`summarize --dry-run` 本地预览，GitHub Actions 里可以自动发/更新 PR comment
+- Review checklist：PR summary 里显示代码改动、验证、失败恢复、高风险证据
+- Quality warnings：提示改了代码但没验证、失败后没恢复、高风险改动缺证据
+- Compact mode：`summarize --compact` 把验证输出压成每条命令一行
+- CLI version：`--version` / `-V` 方便 bug report 填版本
+- 30 个 CLI smoke / error-path 测试通过
+
+当前限制：
+
+- native Claude Code / Codex adapter 还在计划中，Session JSON adapter 目前是比较宽松的桥接层
+- VS Code extension 还在计划中
+- execution graph 还在计划中
+- Web UI 默认展示 mock data，真实 trace 需要通过 Import 按钮或拖拽导入
 
 技术栈是 React + Vite + TypeScript + Tailwind CSS，MIT 协议。如果你平时也用 Claude Code / Codex / Cursor / Aider，欢迎试试看，也欢迎提建议。
 
 Live demo: https://ding-swj.github.io/AgentScope/
 GitHub: https://github.com/ding-swj/AgentScope
-
