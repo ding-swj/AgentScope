@@ -64,8 +64,8 @@ Expected work:
 
 - [x] Add a compact quality checklist.
 - Link uploaded trace artifacts when available.
-- Show omitted action counts more clearly.
-- Keep comments short enough for repeated PR review.
+- [x] Show omitted action counts more clearly.
+- [x] Keep comments short enough for repeated PR review.
 
 ## Later Ideas
 

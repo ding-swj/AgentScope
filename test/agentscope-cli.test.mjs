@@ -332,6 +332,43 @@ test('summarize --dry-run renders trace quality warnings', () => {
   })
 })
 
+test('summarize --compact reduces verification output size', () => {
+  withTempDir((dir) => {
+    const fixture = writeTraceFixture(dir, 'compact-verification.trace.json', [
+      {
+        type: 'test_passed',
+        title: 'Run tests',
+        command: 'npm test',
+        output: 'line-1\nline-2\nline-3\nline-4\nline-5',
+      },
+    ])
+    const fullOutput = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
+    const compactOutput = runCli(['summarize', '--input', fixture, '--compact', '--dry-run'], { cwd: dir })
+
+    assert.match(fullOutput, /line-3/)
+    assert.match(compactOutput, /\(5 lines\)/)
+    assert.doesNotMatch(compactOutput, /line-3/)
+    assert.ok(
+      compactOutput.length < fullOutput.length,
+      `expected compact output to be shorter than full output`,
+    )
+  })
+})
+
+test('summarize reports omitted action counts by type', () => {
+  withTempDir((dir) => {
+    const actions = Array.from({ length: 41 }, (_, index) => ({
+      type: 'read_file',
+      title: `Read file ${index + 1}`,
+      file: `src/file-${index + 1}.ts`,
+    }))
+    const fixture = writeTraceFixture(dir, 'omitted-actions.trace.json', actions)
+    const output = runCli(['summarize', '--input', fixture, '--dry-run'], { cwd: dir })
+
+    assert.match(output, /\.\.\.and 21 more actions omitted \(21 read_file\)/)
+  })
+})
+
 test('summarize reports an error when --input is missing', () => {
   runCliFailure(['summarize'], {
     assertError(error) {

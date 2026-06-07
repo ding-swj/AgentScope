@@ -2,6 +2,13 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Changed
+
+- **Omitted action counts now show type breakdown.**
+- **--compact flag** for summarize reduces verification section to a one-line summary per command.
+
 ## [0.12.0] - 2026-06-07
 
 ### Fixed
