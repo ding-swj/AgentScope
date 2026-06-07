@@ -168,8 +168,8 @@ Run through this list before tagging a GitHub release.
 - [x] npm run build passes
 - [x] summarize --dry-run smoke test passes
 - [x] summarize --compact --dry-run smoke test passes
-- [ ] Git tag created: git tag v0.13.0
-- [ ] GitHub Release published with docs/release-notes/v0.13.0.md content
+- [x] Git tag created: git tag v0.13.0
+- [x] GitHub Release published with docs/release-notes/v0.13.0.md content
 
 ## Every release
 
