@@ -69,7 +69,7 @@ Think of it as developer observability for AI coding agents.
 - `summarize` traces as Markdown for PR review
 - `summarize --dry-run` local PR summary preview
 - Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
-- 26 CLI smoke and error-path tests passing
+- 27 CLI smoke and error-path tests passing
 
 > **New in v0.11.0:** The CLI now supports --version and -V
 > to print the AgentScope version. Bug reports and issue

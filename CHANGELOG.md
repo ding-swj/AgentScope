@@ -2,6 +2,13 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Fixed
+
+- **CLI --version now reports v0.11.0.** Hardcoded version string was not bumped during the v0.11.0 release.
+- **README test count corrected** from 26 to 27.
+
 ## [0.11.0] - 2026-06-07
 
 ### Added

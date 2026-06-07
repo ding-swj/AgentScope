@@ -134,7 +134,7 @@ Run through this list before tagging a GitHub release.
 - [x] CHANGELOG.md includes v0.11.0 entry
 - [x] docs/release-notes/v0.11.0.md written
 - [x] README.md links to v0.11.0 release notes
-- [x] --version flag prints "AgentScope CLI v0.10.0"
+- [x] --version flag prints "AgentScope CLI v0.11.0"
 - [x] npm test (27 pass, 0 fail)
 - [x] npm run lint passes
 - [x] npm run build passes
@@ -146,6 +146,7 @@ Run through this list before tagging a GitHub release.
 - [ ] `npm run lint` passes
 - [ ] `npm run build` passes
 - [ ] `npm run dev` smoke test passes
+- [ ] CLI_VERSION in `bin/agentscope.js` matches the new tag
 - [ ] Import `examples/auth-fix.trace.json` works and renders correctly
 - [ ] CLI recorder smoke test passes, if CLI changed
 - [ ] GitHub Actions example workflow is up to date, if CI docs changed
