@@ -2,7 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
-## Unreleased
+## [1.0.0] - 2026-06-07
+
+### Added
+
+- **New demo GIF.** Shows the v1.0.0 CLI and Web UI workflow (record, summarize, import).
+- **Launch copy refreshed.** HN/Reddit/V2EX copy is updated to the v1.0.0 feature set.
 
 ### Fixed
 

@@ -8,7 +8,7 @@
 
 Visual trace viewer for AI coding agents. Record, validate, and inspect agent runs locally or in CI.
 
-[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v0.13.0.md) | [Trace schema](docs/trace-schema.json)
+[Live demo](https://ding-swj.github.io/AgentScope/) | [Release notes](docs/release-notes/v1.0.0.md) | [Trace schema](docs/trace-schema.json)
 
 Try the live demo or record your first trace in under a minute.
 
@@ -71,10 +71,10 @@ Think of it as developer observability for AI coding agents.
 - Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
 - 30 CLI smoke and error-path tests passing
 
-> **New in v0.13.0:** PR summaries now show omitted action
-> counts by type, and `summarize --compact` keeps verification
-> output to one line per command for repeated PR review.
-> See [release notes](docs/release-notes/v0.13.0.md).
+> **New in v1.0.0:** First stable release. Record, validate,
+> import, and summarize agent runs — with quality warnings,
+> a review checklist, compact PR summaries, and 30 CLI tests.
+> See [release notes](docs/release-notes/v1.0.0.md).
 
 ## Quick Start
 
@@ -212,7 +212,7 @@ AgentScope can run inside CI to record traces, validate them, and upload them as
 
 ## Current Status
 
-AgentScope is in active development. The v0.13.0 release completes PR summary polish with omitted action counts by type and compact verification output, alongside the Web UI, CLI recorder, trace validation, Generic JSONL adapter, Session JSON adapter, trace quality warnings, compact review checklist, drag-and-drop import, CLI test suite, and GitHub Actions integration.
+AgentScope v1.0.0 is the first stable release. It includes the Web UI, CLI recorder, trace validation, Generic JSONL and Session JSON adapters, PR summary comments with review checklist and quality warnings, 30 CLI tests, and GitHub Actions integration.
 
 ```bash
 # Record a trace
@@ -232,7 +232,7 @@ npm run dev
 # Then import the trace via the Import button or drag-and-drop
 ```
 
-See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v0.13.0.md`](docs/release-notes/v0.13.0.md) for the latest release notes.
+See [`CHANGELOG.md`](CHANGELOG.md) for release history and [`docs/release-notes/v1.0.0.md`](docs/release-notes/v1.0.0.md) for the latest release notes.
 
 ## Feedback
 
