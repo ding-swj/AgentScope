@@ -155,6 +155,22 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: git tag v0.12.0
 - [x] GitHub Release published with docs/release-notes/v0.12.0.md content
 
+## v0.13.0 release
+
+- [x] CHANGELOG.md includes v0.13.0 entry
+- [x] docs/release-notes/v0.13.0.md written
+- [x] README.md links to v0.13.0 release notes
+- [x] summarize omitted action counts show type breakdown
+- [x] summarize --compact reduces verification output
+- [x] docs/roadmap.md #8 omitted-count and compact-comment items checked
+- [x] npm test (30 pass, 0 fail)
+- [x] npm run lint passes
+- [x] npm run build passes
+- [x] summarize --dry-run smoke test passes
+- [x] summarize --compact --dry-run smoke test passes
+- [ ] Git tag created: git tag v0.13.0
+- [ ] GitHub Release published with docs/release-notes/v0.13.0.md content
+
 ## Every release
 
 - [ ] `npm run lint` passes
