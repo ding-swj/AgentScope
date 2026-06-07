@@ -2,7 +2,7 @@
 
 All notable changes to AgentScope are documented in this file.
 
-## Unreleased
+## [0.12.0] - 2026-06-07
 
 ### Fixed
 
