@@ -68,12 +68,16 @@ Think of it as developer observability for AI coding agents.
 - `import-session` Claude/Codex-style session exports
 - `summarize` traces as Markdown for PR review
 - `summarize --dry-run` local PR summary preview
+- `summarize --compact` one-line-per-command verification output
+- Review checklist with Code changes, Verification, Failed recovery, High-risk evidence
+- `--version` and `-V` CLI version flag
 - Trace quality warnings for edits without verification, failures without recovery, and high-risk edits without evidence
 - 30 CLI smoke and error-path tests passing
 
 > **New in v1.0.0:** First stable release. Record, validate,
 > import, and summarize agent runs — with quality warnings,
-> a review checklist, compact PR summaries, and 30 CLI tests.
+> a review checklist, compact PR summaries, 30 CLI tests,
+> and a fresh demo GIF of the full workflow.
 > See [release notes](docs/release-notes/v1.0.0.md).
 
 ## Quick Start
