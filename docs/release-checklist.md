@@ -129,6 +129,18 @@ Run through this list before tagging a GitHub release.
 - [x] Git tag created: git tag v0.10.0
 - [x] GitHub Release published with docs/release-notes/v0.10.0.md content
 
+## v0.11.0 release
+
+- [x] CHANGELOG.md includes v0.11.0 entry
+- [x] docs/release-notes/v0.11.0.md written
+- [x] README.md links to v0.11.0 release notes
+- [x] --version flag prints "AgentScope CLI v0.10.0"
+- [x] npm test (27 pass, 0 fail)
+- [x] npm run lint passes
+- [x] npm run build passes
+- [ ] Git tag created: git tag v0.11.0
+- [ ] GitHub Release published with docs/release-notes/v0.11.0.md content
+
 ## Every release
 
 - [ ] `npm run lint` passes
