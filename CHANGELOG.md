@@ -2,6 +2,12 @@
 
 All notable changes to AgentScope are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **CI artifact link in PR summaries.** summarize now links to the GitHub Actions run when GITHUB_RUN_ID is set.
+
 ## [1.0.0] - 2026-06-07
 
 ### Added

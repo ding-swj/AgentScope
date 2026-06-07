@@ -876,9 +876,10 @@ function renderRunSummary(run, headingLevel = 2, opts = {}) {
 function generateTraceSummary(trace, opts = {}) {
   const warnings = collectTraceQualityWarnings(trace)
   const warningLines = renderQualityWarnings(warnings)
+  const artifactLines = renderArtifactLink()
 
   if (trace.runs.length === 1) {
-    return [renderRunSummary(trace.runs[0], 2, opts), ...warningLines].join('\n').trimEnd()
+    return [renderRunSummary(trace.runs[0], 2, opts), ...warningLines, ...artifactLines].join('\n').trimEnd()
   }
 
   const lines = [
@@ -900,7 +901,23 @@ function generateTraceSummary(trace, opts = {}) {
   }
 
   lines.push(...warningLines)
+  lines.push(...artifactLines)
   return lines.join('\n').trimEnd()
+}
+
+function renderArtifactLink() {
+  const serverUrl = process.env.GITHUB_SERVER_URL || 'https://github.com'
+  const repo = process.env.GITHUB_REPOSITORY
+  const runId = process.env.GITHUB_RUN_ID
+
+  if (!repo || !runId) return []
+
+  const url = `${serverUrl}/${repo}/actions/runs/${runId}`
+  return [
+    '',
+    `Trace artifact: [GitHub Actions run](${url})`,
+    '',
+  ]
 }
 
 function renderQualityWarnings(warnings) {

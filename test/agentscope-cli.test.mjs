@@ -332,6 +332,31 @@ test('summarize --dry-run renders trace quality warnings', () => {
   })
 })
 
+test('summarize links to CI run when GITHUB_RUN_ID is set', () => {
+  const output = runCli(['summarize', '--input', authTrace, '--dry-run'], {
+    env: {
+      GITHUB_REPOSITORY: 'ding-swj/AgentScope',
+      GITHUB_RUN_ID: '123456',
+    },
+  })
+
+  assert.match(output, /github\.com\/ding-swj\/AgentScope\/actions\/runs\/123456/)
+  assert.match(output, /Trace artifact/)
+})
+
+test('summarize does not link CI run when GITHUB_RUN_ID is absent', () => {
+  const output = runCli(['summarize', '--input', authTrace, '--dry-run'], {
+    env: {
+      GITHUB_REPOSITORY: '',
+      GITHUB_RUN_ID: '',
+      GITHUB_SERVER_URL: '',
+    },
+  })
+
+  assert.doesNotMatch(output, /actions\/runs/)
+  assert.doesNotMatch(output, /Trace artifact/)
+})
+
 test('summarize --compact reduces verification output size', () => {
   withTempDir((dir) => {
     const fixture = writeTraceFixture(dir, 'compact-verification.trace.json', [

@@ -63,7 +63,7 @@ The current PR comment summary is useful, but still basic.
 Expected work:
 
 - [x] Add a compact quality checklist.
-- Link uploaded trace artifacts when available.
+- [x] Link uploaded trace artifacts when available.
 - [x] Show omitted action counts more clearly.
 - [x] Keep comments short enough for repeated PR review.
 
