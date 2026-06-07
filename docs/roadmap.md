@@ -56,7 +56,7 @@ Expected work:
 
 ### 4. PR Comment Improvements
 
-Status: since v0.9.0 ([#8](https://github.com/ding-swj/AgentScope/issues/8))
+Status: since v1.1.0 ([#8](https://github.com/ding-swj/AgentScope/issues/8))
 
 The current PR comment summary is useful, but still basic.
 
