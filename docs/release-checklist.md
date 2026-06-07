@@ -183,8 +183,8 @@ Run through this list before tagging a GitHub release.
 - [x] npm test (30 pass, 0 fail)
 - [x] npm run lint passes
 - [x] npm run build passes
-- [ ] Git tag created: git tag v1.0.0
-- [ ] GitHub Release published with docs/release-notes/v1.0.0.md content
+- [x] Git tag created: git tag v1.0.0
+- [x] GitHub Release published with docs/release-notes/v1.0.0.md content
 
 ## Every release
 
